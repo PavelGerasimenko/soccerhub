@@ -33,6 +33,9 @@ RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy the frontend static files
+COPY --from=builder /app/public ./public
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001

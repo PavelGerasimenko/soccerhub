@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoccerHub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.5;
+      padding: 0 16px 60px;
+    }
+    header {
+      text-align: center;
+      padding: 32px 0 24px;
+    }
+    header h1 { font-size: 2rem; color: #22c55e; }
+    header p { color: #94a3b8; font-size: 0.95rem; }
+    .container { max-width: 720px; margin: 0 auto; }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card h2 { font-size: 1.15rem; margin-bottom: 16px; color: #f1f5f9; }
+    label { display: block; font-size: 0.82rem; color: #94a3b8; margin: 10px 0 4px; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+    }
+    input:focus, select:focus { outline: none; border-color: #22c55e; }
+    button {
+      background: #22c55e;
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+      width: 100%;
+    }
+    button:hover { background: #16a34a; }
+    button.secondary { background: #334155; color: #e2e8f0; }
+    button.secondary:hover { background: #475569; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tabs button { margin-top: 0; }
+    .row { display: flex; gap: 12px; }
+    .row > div { flex: 1; }
+    .msg { padding: 10px 12px; border-radius: 8px; margin-top: 14px; font-size: 0.9rem; display: none; }
+    .msg.success { background: #052e16; color: #86efac; border: 1px solid #166534; display: block; }
+    .msg.error { background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; display: block; }
+    .hidden { display: none; }
+    .event {
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      background: #0f172a;
+    }
+    .event h3 { color: #22c55e; font-size: 1.05rem; }
+    .event .meta { color: #94a3b8; font-size: 0.85rem; margin-top: 4px; }
+    .badge {
+      display: inline-block;
+      background: #334155;
+      color: #cbd5e1;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+    .welcome { display: flex; justify-content: space-between; align-items: center; }
+    .welcome button { width: auto; margin-top: 0; }
+    .empty { color: #64748b; text-align: center; padding: 20px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚽ SoccerHub</h1>
+    <p>Find and host soccer games near you</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Logged-out: auth forms -->
+    <div class="card" id="authCard">
+      <div class="tabs">
+        <button id="tabLogin" onclick="showTab('login')">Log In</button>
+        <button id="tabRegister" class="secondary" onclick="showTab('register')">Register</button>
+      </div>
+
+      <!-- Login form -->
+      <div id="loginForm">
+        <h2>Welcome back</h2>
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com" />
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="Your password" />
+        <button onclick="login()">Log In</button>
+      </div>
+
+      <!-- Register form -->
+      <div id="registerForm" class="hidden">
+        <h2>Create your account</h2>
+        <div class="row">
+          <div>
+            <label>First name</label>
+            <input id="regFirst" type="text" placeholder="Test" />
+          </div>
+          <div>
+            <label>Last name</label>
+            <input id="regLast" type="text" placeholder="User" />
+          </div>
+        </div>
+        <label>Email</label>
+        <input id="regEmail" type="email" placeholder="you@example.com" />
+        <label>Password (min 8 characters)</label>
+        <input id="regPassword" type="password" placeholder="Choose a password" />
+        <button onclick="register()">Register</button>
+      </div>
+
+      <div id="authMsg" class="msg"></div>
+    </div>
+
+    <!-- Logged-in: welcome + create event -->
+    <div class="card hidden" id="userCard">
+      <div class="welcome">
+        <div>
+          <h2 id="welcomeName" style="margin-bottom:0;">Welcome</h2>
+          <p style="color:#94a3b8; font-size:0.85rem;" id="welcomeEmail"></p>
+        </div>
+        <button class="secondary" onclick="logout()">Log Out</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="createCard">
+      <h2>Host a new game</h2>
+      <label>Title</label>
+      <input id="evTitle" type="text" placeholder="Friday Night 5-a-side" />
+      <div class="row">
+        <div>
+          <label>Type</label>
+          <select id="evType">
+            <option value="game">Game</option>
+            <option value="tournament">Tournament</option>
+            <option value="league">League</option>
+          </select>
+        </div>
+        <div>
+          <label>City</label>
+          <input id="evCity" type="text" placeholder="Austin" />
+        </div>
+      </div>
+      <label>Location</label>
+      <input id="evLocation" type="text" placeholder="Zilker Park Field 3" />
+      <div class="row">
+        <div>
+          <label>Starts</label>
+          <input id="evStart" type="datetime-local" />
+        </div>
+        <div>
+          <label>Ends</label>
+          <input id="evEnd" type="datetime-local" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Max players</label>
+          <input id="evMax" type="number" value="10" min="2" />
+        </div>
+        <div>
+          <label>Price ($)</label>
+          <input id="evPrice" type="number" value="0" min="0" />
+        </div>
+      </div>
+      <button onclick="createEvent()">Create Game</button>
+      <div id="createMsg" class="msg"></div>
+    </div>
+
+    <!-- Events list (always visible) -->
+    <div class="card">
+      <div class="welcome" style="margin-bottom:16px;">
+        <h2 style="margin-bottom:0;">Upcoming Games</h2>
+        <button class="secondary" style="width:auto; margin-top:0;" onclick="loadEvents()">Refresh</button>
+      </div>
+      <div id="eventsList"><div class="empty">Loading games…</div></div>
+    </div>
+
+  </div>
+
+  <script>
+    // The API lives at the same address as this page, so we use relative paths.
+    const API = '/api/v1';
+
+    // Keep the login token in memory and in the browser so a refresh stays logged in.
+    let token = localStorage.getItem('token') || null;
+    let user = JSON.parse(localStorage.getItem('user') || 'null');
+
+    function showTab(which) {
+      const login = which === 'login';
+      document.getElementById('loginForm').classList.toggle('hidden', !login);
+      document.getElementById('registerForm').classList.toggle('hidden', login);
+      document.getElementById('tabLogin').className = login ? '' : 'secondary';
+      document.getElementById('tabRegister').className = login ? 'secondary' : '';
+    }
+
+    function showMsg(id, text, ok) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'success' : 'error');
+    }
+
+    // Update the page depending on whether someone is logged in.
+    function render() {
+      const loggedIn = !!token;
+      document.getElementById('authCard').classList.toggle('hidden', loggedIn);
+      document.getElementById('userCard').classList.toggle('hidden', !loggedIn);
+      document.getElementById('createCard').classList.toggle('hidden', !loggedIn);
+      if (loggedIn && user) {
+        document.getElementById('welcomeName').textContent = 'Welcome, ' + user.first_name + '!';
+        document.getElementById('welcomeEmail').textContent = user.email;
+      }
+    }
+
+    async function register() {
+      const body = {
+        first_name: document.getElementById('regFirst').value,
+        last_name: document.getElementById('regLast').value,
+        email: document.getElementById('regEmail').value,
+        password: document.getElementById('regPassword').value,
+      };
+      try {
+        const res = await fetch(API + '/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (data.success) {
+          saveLogin(data.data);
+          showMsg('authMsg', 'Account created! You are logged in.', true);
+        } else {
+          showMsg('authMsg', data.error?.message || 'Registration failed', false);
+        }
+      } catch (e) {
+        showMsg('authMsg', 'Could not reach the server.', false);
+      }
+    }
+
+    async function login() {
+      const body = {
+        email: document.getElementById('loginEmail').value,
+        password: document.getElementById('loginPassword').value,
+      };
+      try {
+        const res = await fetch(API + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (data.success) {
+          saveLogin(data.data);
+          showMsg('authMsg', 'Logged in!', true);
+        } else {
+          showMsg('authMsg', data.error?.message || 'Login failed', false);
+        }
+      } catch (e) {
+        showMsg('authMsg', 'Could not reach the server.', false);
+      }
+    }
+
+    function saveLogin(data) {
+      token = data.accessToken;
+      user = data.user;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      render();
+    }
+
+    function logout() {
+      token = null;
+      user = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      render();
+    }
+
+    async function createEvent() {
+      const start = document.getElementById('evStart').value;
+      const end = document.getElementById('evEnd').value;
+      if (!start || !end) {
+        showMsg('createMsg', 'Please pick a start and end time.', false);
+        return;
+      }
+      const body = {
+        title: document.getElementById('evTitle').value,
+        type: document.getElementById('evType').value,
+        city: document.getElementById('evCity').value,
+        location: document.getElementById('evLocation').value,
+        start_time: new Date(start).toISOString(),
+        end_time: new Date(end).toISOString(),
+        max_participants: parseInt(document.getElementById('evMax').value, 10),
+        price: document.getElementById('evPrice').value,
+      };
+      try {
+        const res = await fetch(API + '/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+          },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMsg('createMsg', 'Game created!', true);
+          loadEvents();
+        } else {
+          showMsg('createMsg', data.error?.message || 'Could not create game', false);
+        }
+      } catch (e) {
+        showMsg('createMsg', 'Could not reach the server.', false);
+      }
+    }
+
+    async function loadEvents() {
+      const list = document.getElementById('eventsList');
+      list.innerHTML = '<div class="empty">Loading games…</div>';
+      try {
+        const res = await fetch(API + '/events');
+        const data = await res.json();
+        const events = data.data?.events || [];
+        if (events.length === 0) {
+          list.innerHTML = '<div class="empty">No games yet. Be the first to host one!</div>';
+          return;
+        }
+        list.innerHTML = events.map(function (ev) {
+          const when = new Date(ev.start_time).toLocaleString();
+          const price = Number(ev.price) > 0 ? ('$' + ev.price) : 'Free';
+          return '<div class="event">'
+            + '<h3>' + escapeHtml(ev.title) + '</h3>'
+            + '<div class="meta">📍 ' + escapeHtml(ev.location) + ', ' + escapeHtml(ev.city) + '</div>'
+            + '<div class="meta">🗓️ ' + when + '</div>'
+            + '<span class="badge">' + ev.type + '</span>'
+            + '<span class="badge">' + price + '</span>'
+            + '<span class="badge">up to ' + ev.max_participants + ' players</span>'
+            + '</div>';
+        }).join('');
+      } catch (e) {
+        list.innerHTML = '<div class="empty">Could not load games.</div>';
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    // Start-up
+    render();
+    loadEvents();
+  </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import path from 'path';
 import express, { Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -13,13 +14,27 @@ import { errorHandler } from './middleware/errorHandler';
 const app: Express = express();
 
 // Middleware
-app.use(helmet());
+// CSP is configured to allow the bundled frontend's inline script/style.
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      connectSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:'],
+    },
+  },
+}));
 app.use(cors({
   origin: config.cors.origin,
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve the frontend (public/index.html) at the site root
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
