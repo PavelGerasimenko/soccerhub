@@ -1,0 +1,39 @@
+import jwt from 'jsonwebtoken';
+import config from '../config/environment';
+import { JwtPayload } from '../types/user.interface';
+
+export const generateAccessToken = (id: string, email: string): string => {
+  return jwt.sign({ id, email }, config.jwt.secret, {
+    expiresIn: config.jwt.expire,
+  });
+};
+
+export const generateRefreshToken = (id: string, email: string): string => {
+  return jwt.sign({ id, email }, config.jwt.secret, {
+    expiresIn: config.jwt.refreshExpire,
+  });
+};
+
+export const verifyAccessToken = (token: string): JwtPayload | null => {
+  try {
+    return jwt.verify(token, config.jwt.secret) as JwtPayload;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const verifyRefreshToken = (token: string): JwtPayload | null => {
+  try {
+    return jwt.verify(token, config.jwt.secret) as JwtPayload;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const decodeToken = (token: string): JwtPayload | null => {
+  try {
+    return jwt.decode(token) as JwtPayload;
+  } catch (error) {
+    return null;
+  }
+};

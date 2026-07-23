@@ -1,0 +1,114 @@
+### SoccerHub Backend API Testing
+### Use with VS Code REST Client extension
+
+@baseUrl = http://localhost:3000
+@apiVersion = /api/v1
+
+### Health Check
+GET {{baseUrl}}/health
+
+###
+### Authentication Endpoints
+###
+
+### Register new user
+POST {{baseUrl}}{{apiVersion}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "SecurePassword123!",
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone": "+12125551234",
+  "gender": "male",
+  "skill_level": "intermediate",
+  "preferred_positions": ["forward", "midfielder"]
+}
+
+### Login user
+POST {{baseUrl}}{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "SecurePassword123!"
+}
+
+###
+### User Management Endpoints
+###
+
+### Get user profile (replace with real user ID and token)
+GET {{baseUrl}}{{apiVersion}}/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY0YmRhNzI0LTk4YzQtNDUwZC04MmM2LTI5OTI3MDcxZGQ2MCIsImVtYWlsIjoiam9obkBleGFtcGxlLmNvbSIsImlhdCI6MTY5MDEwNzIwMCwiZXhwIjoxNjkwMTA4MTAwfQ.test
+
+### Update user profile
+PUT {{baseUrl}}{{apiVersion}}/users/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test
+
+{
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "bio": "Professional soccer player",
+  "skill_level": "advanced",
+  "location": "New York, NY"
+}
+
+### Delete user account
+DELETE {{baseUrl}}{{apiVersion}}/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test
+
+###
+### Error Cases
+###
+
+### Invalid email format
+POST {{baseUrl}}{{apiVersion}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "SecurePassword123!",
+  "first_name": "John",
+  "last_name": "Doe"
+}
+
+### Password too short
+POST {{baseUrl}}{{apiVersion}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "short",
+  "first_name": "John",
+  "last_name": "Doe"
+}
+
+### Missing required fields
+POST {{baseUrl}}{{apiVersion}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+### Invalid credentials
+POST {{baseUrl}}{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "password": "WrongPassword123!"
+}
+
+### Unauthorized access (missing token)
+GET {{baseUrl}}{{apiVersion}}/users/550e8400-e29b-41d4-a716-446655440000
+
+### Unauthorized access (invalid token)
+GET {{baseUrl}}{{apiVersion}}/users/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer invalid-token
+
+### Not found
+GET {{baseUrl}}{{apiVersion}}/users/00000000-0000-0000-0000-000000000000

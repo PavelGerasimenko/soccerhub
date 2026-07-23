@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soccerhub
+  labels:
+    name: soccerhub
+    environment: production

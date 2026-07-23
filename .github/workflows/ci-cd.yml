@@ -1,0 +1,246 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format -- --check
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: soccerhub_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: soccerhub_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+        run: npm test -- --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.prod
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high || true
+
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, security-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.27.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Create namespace
+        run: kubectl apply -f k8s/namespace.yaml
+
+      - name: Deploy secrets
+        run: |
+          kubectl create secret generic soccerhub-secrets \
+            --from-literal=db-name=${{ secrets.DB_NAME }} \
+            --from-literal=db-user=${{ secrets.DB_USER }} \
+            --from-literal=db-password=${{ secrets.DB_PASSWORD }} \
+            --from-literal=jwt-access-secret=${{ secrets.JWT_ACCESS_SECRET }} \
+            --from-literal=jwt-refresh-secret=${{ secrets.JWT_REFRESH_SECRET }} \
+            -n soccerhub \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy ConfigMap
+        run: kubectl apply -f k8s/configmap.yaml
+
+      - name: Deploy PostgreSQL schema ConfigMap
+        run: |
+          kubectl create configmap postgres-schema \
+            --from-file=src/database/schema.sql \
+            -n soccerhub \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy StatefulSets
+        run: kubectl apply -f k8s/statefulset.yaml
+
+      - name: Deploy Services
+        run: kubectl apply -f k8s/service.yaml
+
+      - name: Deploy Application
+        run: kubectl apply -f k8s/deployment.yaml
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/soccerhub-app -n soccerhub --timeout=5m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n soccerhub
+          kubectl get services -n soccerhub
+          kubectl logs -n soccerhub -l app=soccerhub-app --tail=50
+
+      - name: Slack notification
+        uses: slackapi/slack-github-action@v1
+        if: always()
+        with:
+          payload: |
+            {
+              "text": "SoccerHub Deployment: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*SoccerHub Production Deployment*\nStatus: ${{ job.status }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

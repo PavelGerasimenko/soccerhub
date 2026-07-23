@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pandoc -t markdown \"C:\\\\Users\\\\pg114544\\\\Downloads\\\\SoccerHub_IT_Architecture_Documentation.docx\")"
+    ]
+  }
+}
