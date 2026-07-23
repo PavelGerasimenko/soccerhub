@@ -97,8 +97,8 @@
     <!-- Logged-out: auth forms -->
     <div class="card" id="authCard">
       <div class="tabs">
-        <button id="tabLogin" onclick="showTab('login')">Log In</button>
-        <button id="tabRegister" class="secondary" onclick="showTab('register')">Register</button>
+        <button id="tabLogin">Log In</button>
+        <button id="tabRegister" class="secondary">Register</button>
       </div>
 
       <!-- Login form -->
@@ -108,7 +108,7 @@
         <input id="loginEmail" type="email" placeholder="you@example.com" />
         <label>Password</label>
         <input id="loginPassword" type="password" placeholder="Your password" />
-        <button onclick="login()">Log In</button>
+        <button id="btnLogin">Log In</button>
       </div>
 
       <!-- Register form -->
@@ -128,7 +128,7 @@
         <input id="regEmail" type="email" placeholder="you@example.com" />
         <label>Password (min 8 characters)</label>
         <input id="regPassword" type="password" placeholder="Choose a password" />
-        <button onclick="register()">Register</button>
+        <button id="btnRegister">Register</button>
       </div>
 
       <div id="authMsg" class="msg"></div>
@@ -141,7 +141,7 @@
           <h2 id="welcomeName" style="margin-bottom:0;">Welcome</h2>
           <p style="color:#94a3b8; font-size:0.85rem;" id="welcomeEmail"></p>
         </div>
-        <button class="secondary" onclick="logout()">Log Out</button>
+        <button class="secondary" id="btnLogout">Log Out</button>
       </div>
     </div>
 
@@ -185,7 +185,7 @@
           <input id="evPrice" type="number" value="0" min="0" />
         </div>
       </div>
-      <button onclick="createEvent()">Create Game</button>
+      <button id="btnCreate">Create Game</button>
       <div id="createMsg" class="msg"></div>
     </div>
 
@@ -193,7 +193,7 @@
     <div class="card">
       <div class="welcome" style="margin-bottom:16px;">
         <h2 style="margin-bottom:0;">Upcoming Games</h2>
-        <button class="secondary" style="width:auto; margin-top:0;" onclick="loadEvents()">Refresh</button>
+        <button class="secondary" style="width:auto; margin-top:0;" id="btnRefresh">Refresh</button>
       </div>
       <div id="eventsList"><div class="empty">Loading games…</div></div>
     </div>
@@ -369,6 +369,16 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
     }
+
+    // Connect buttons to their actions (done here so it works under the
+    // page's Content-Security-Policy, which blocks inline onclick attributes).
+    document.getElementById('tabLogin').addEventListener('click', function () { showTab('login'); });
+    document.getElementById('tabRegister').addEventListener('click', function () { showTab('register'); });
+    document.getElementById('btnLogin').addEventListener('click', login);
+    document.getElementById('btnRegister').addEventListener('click', register);
+    document.getElementById('btnLogout').addEventListener('click', logout);
+    document.getElementById('btnCreate').addEventListener('click', createEvent);
+    document.getElementById('btnRefresh').addEventListener('click', loadEvents);
 
     // Start-up
     render();
