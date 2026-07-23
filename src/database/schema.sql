@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS events.events (
   type VARCHAR(50) NOT NULL CHECK (type IN ('game', 'tournament', 'league')),
   location VARCHAR(255) NOT NULL,
   city VARCHAR(100) NOT NULL,
+  state VARCHAR(50),
+  zip_code VARCHAR(20),
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
   end_time TIMESTAMP WITH TIME ZONE NOT NULL,
   field_id UUID,

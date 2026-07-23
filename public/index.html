@@ -143,28 +143,35 @@
         </div>
         <button class="secondary" id="btnLogout">Log Out</button>
       </div>
+      <button id="btnHostToggle">＋ Host a new Game</button>
     </div>
 
     <div class="card hidden" id="createCard">
       <h2>Host a new game</h2>
       <label>Title</label>
       <input id="evTitle" type="text" placeholder="Friday Night 5-a-side" />
+      <label>Type</label>
+      <select id="evType">
+        <option value="game">Game</option>
+        <option value="tournament">Tournament</option>
+        <option value="league">League</option>
+      </select>
+      <label>Location / Address</label>
+      <input id="evLocation" type="text" placeholder="Zilker Park, 2100 Barton Springs Rd" />
       <div class="row">
-        <div>
-          <label>Type</label>
-          <select id="evType">
-            <option value="game">Game</option>
-            <option value="tournament">Tournament</option>
-            <option value="league">League</option>
-          </select>
-        </div>
         <div>
           <label>City</label>
           <input id="evCity" type="text" placeholder="Austin" />
         </div>
+        <div>
+          <label>State</label>
+          <input id="evState" type="text" placeholder="TX" />
+        </div>
+        <div>
+          <label>Zip Code</label>
+          <input id="evZip" type="text" placeholder="78704" />
+        </div>
       </div>
-      <label>Location</label>
-      <input id="evLocation" type="text" placeholder="Zilker Park Field 3" />
       <div class="row">
         <div>
           <label>Starts</label>
@@ -186,6 +193,7 @@
         </div>
       </div>
       <button id="btnCreate">Create Game</button>
+      <button class="secondary" id="btnCancelHost">Cancel</button>
       <div id="createMsg" class="msg"></div>
     </div>
 
@@ -227,7 +235,8 @@
       const loggedIn = !!token;
       document.getElementById('authCard').classList.toggle('hidden', loggedIn);
       document.getElementById('userCard').classList.toggle('hidden', !loggedIn);
-      document.getElementById('createCard').classList.toggle('hidden', !loggedIn);
+      // The create-game form stays hidden until the user clicks "Host a new Game".
+      document.getElementById('createCard').classList.add('hidden');
       if (loggedIn && user) {
         document.getElementById('welcomeName').textContent = 'Welcome, ' + user.first_name + '!';
         document.getElementById('welcomeEmail').textContent = user.email;
@@ -309,6 +318,8 @@
         title: document.getElementById('evTitle').value,
         type: document.getElementById('evType').value,
         city: document.getElementById('evCity').value,
+        state: document.getElementById('evState').value,
+        zip_code: document.getElementById('evZip').value,
         location: document.getElementById('evLocation').value,
         start_time: new Date(start).toISOString(),
         end_time: new Date(end).toISOString(),
@@ -379,6 +390,14 @@
     document.getElementById('btnLogout').addEventListener('click', logout);
     document.getElementById('btnCreate').addEventListener('click', createEvent);
     document.getElementById('btnRefresh').addEventListener('click', loadEvents);
+    document.getElementById('btnHostToggle').addEventListener('click', function () {
+      const c = document.getElementById('createCard');
+      c.classList.remove('hidden');
+      c.scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('btnCancelHost').addEventListener('click', function () {
+      document.getElementById('createCard').classList.add('hidden');
+    });
 
     // Start-up
     render();

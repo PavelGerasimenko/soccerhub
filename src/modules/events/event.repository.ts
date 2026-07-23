@@ -21,11 +21,11 @@ export class EventRepository {
       `INSERT INTO events.events (
         id, title, description, type, location, city, start_time, end_time,
         host_id, min_participants, max_participants, skill_level, surface_type,
-        price, status, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+        price, status, created_at, updated_at, state, zip_code
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
       RETURNING id, title, description, type, location, city, start_time, end_time,
         field_id, host_id, min_participants, max_participants, current_participants,
-        skill_level, surface_type, price, status, is_active, created_at, updated_at`,
+        skill_level, surface_type, price, status, is_active, state, zip_code, created_at, updated_at`,
       [
         id,
         title,
@@ -44,6 +44,8 @@ export class EventRepository {
         'draft',
         now,
         now,
+        additionalData?.state || null,
+        additionalData?.zip_code || null,
       ],
     );
 
@@ -54,7 +56,7 @@ export class EventRepository {
     const result = await query(
       `SELECT id, title, description, type, location, city, start_time, end_time,
         field_id, host_id, min_participants, max_participants, current_participants,
-        skill_level, surface_type, price, status, is_active, created_at, updated_at
+        skill_level, surface_type, price, status, is_active, state, zip_code, created_at, updated_at
       FROM events.events WHERE id = $1 AND is_active = true`,
       [id],
     );
@@ -142,7 +144,7 @@ export class EventRepository {
     const result = await query(
       `SELECT id, title, description, type, location, city, start_time, end_time,
         field_id, host_id, min_participants, max_participants, current_participants,
-        skill_level, surface_type, price, status, is_active, created_at, updated_at
+        skill_level, surface_type, price, status, is_active, state, zip_code, created_at, updated_at
       FROM events.events ${whereClause} ${orderClause} LIMIT $${paramCount} OFFSET $${paramCount + 1}`,
       [...params, limit, offset],
     );
@@ -179,7 +181,7 @@ export class EventRepository {
       WHERE id = $${paramCount + 1} AND is_active = true
       RETURNING id, title, description, type, location, city, start_time, end_time,
         field_id, host_id, min_participants, max_participants, current_participants,
-        skill_level, surface_type, price, status, is_active, created_at, updated_at`,
+        skill_level, surface_type, price, status, is_active, state, zip_code, created_at, updated_at`,
       values,
     );
 

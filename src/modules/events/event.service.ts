@@ -29,6 +29,8 @@ export class EventService {
         skill_level: data.skill_level,
         surface_type: data.surface_type,
         price: data.price,
+        state: data.state,
+        zip_code: data.zip_code,
       },
     );
 

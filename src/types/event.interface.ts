@@ -9,6 +9,8 @@ export interface Event {
   type: EventType;
   location: string;
   city: string;
+  state?: string;
+  zip_code?: string;
   start_time: Date;
   end_time: Date;
   field_id?: string;
@@ -42,6 +44,8 @@ export interface CreateEventRequest {
   type: EventType;
   location: string;
   city: string;
+  state?: string;
+  zip_code?: string;
   start_time: Date;
   end_time: Date;
   min_participants?: number;
