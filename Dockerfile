@@ -1,13 +1,14 @@
 # Build stage
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
-# Install dependencies
-RUN npm ci
+# Install all dependencies (including dev) so TypeScript can compile.
+# npm install is used instead of npm ci because there is no package-lock.json.
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -24,10 +25,10 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
 # Install production dependencies only
-RUN npm ci --omit=dev
+RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
