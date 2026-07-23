@@ -3,150 +3,557 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SoccerHub</title>
+  <title>SoccerHub — Your Game. Your Community.</title>
   <style>
+    :root {
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --dark: #0b1220;
+      --dark-2: #101a2c;
+      --card-dark: #131f33;
+      --line-dark: #24344d;
+      --page: #eef2f6;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --orange: #f97316;
+      --radius: 14px;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--page);
+      color: var(--ink);
       line-height: 1.5;
-      padding: 0 16px 60px;
     }
-    header {
-      text-align: center;
-      padding: 32px 0 24px;
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+    input, select { font-family: inherit; }
+
+    /* ---------- NAV ---------- */
+    nav {
+      background: #050a12;
+      position: sticky; top: 0; z-index: 50;
+      border-bottom: 1px solid #10203a;
     }
-    header h1 { font-size: 2rem; color: #22c55e; }
-    header p { color: #94a3b8; font-size: 0.95rem; }
-    .container { max-width: 720px; margin: 0 auto; }
-    .card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
+    .nav-inner {
+      display: flex; align-items: center; gap: 22px;
+      height: 64px;
     }
-    .card h2 { font-size: 1.15rem; margin-bottom: 16px; color: #f1f5f9; }
-    label { display: block; font-size: 0.82rem; color: #94a3b8; margin: 10px 0 4px; }
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-size: 0.95rem;
+    .logo { display: flex; align-items: center; gap: 8px; font-size: 1.35rem; font-weight: 800; color: #fff; text-decoration: none; }
+    .logo .ball { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #34d67a, #15803d); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .logo em { color: var(--green); font-style: normal; }
+    .nav-links { display: flex; gap: 4px; flex: 1; }
+    .nav-links a {
+      color: #cbd5e1; text-decoration: none; font-size: 0.92rem; font-weight: 500;
+      padding: 8px 12px; border-radius: 8px;
     }
-    input:focus, select:focus { outline: none; border-color: #22c55e; }
-    button {
-      background: #22c55e;
-      color: #0f172a;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 18px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 16px;
-      width: 100%;
+    .nav-links a:hover { color: #fff; background: #0f1c30; }
+    .nav-links a.active { color: #fff; }
+    .nav-links a.active { box-shadow: inset 0 -2px 0 var(--green); border-radius: 8px 8px 0 0; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .loc-chip {
+      display: flex; align-items: center; gap: 6px;
+      color: #e2e8f0; font-size: 0.88rem; background: #0f1c30;
+      padding: 7px 12px; border-radius: 999px; border: 1px solid #1c2c47;
+      white-space: nowrap;
     }
-    button:hover { background: #16a34a; }
-    button.secondary { background: #334155; color: #e2e8f0; }
-    button.secondary:hover { background: #475569; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tabs button { margin-top: 0; }
-    .row { display: flex; gap: 12px; }
-    .row > div { flex: 1; }
-    .msg { padding: 10px 12px; border-radius: 8px; margin-top: 14px; font-size: 0.9rem; display: none; }
-    .msg.success { background: #052e16; color: #86efac; border: 1px solid #166534; display: block; }
-    .msg.error { background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; display: block; }
-    .hidden { display: none; }
-    .event {
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 14px;
-      margin-bottom: 12px;
-      background: #0f172a;
+    .icon-btn {
+      background: transparent; color: #cbd5e1; font-size: 1.05rem;
+      width: 36px; height: 36px; border-radius: 50%; position: relative;
     }
-    .event h3 { color: #22c55e; font-size: 1.05rem; }
-    .event .meta { color: #94a3b8; font-size: 0.85rem; margin-top: 4px; }
-    .badge {
-      display: inline-block;
-      background: #334155;
-      color: #cbd5e1;
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 0.75rem;
-      margin-right: 6px;
-      margin-top: 6px;
+    .icon-btn:hover { background: #0f1c30; }
+    .badge-dot {
+      position: absolute; top: 2px; right: 0;
+      background: var(--green); color: #04120a; font-size: 0.62rem; font-weight: 700;
+      min-width: 15px; height: 15px; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center; padding: 0 3px;
     }
-    .welcome { display: flex; justify-content: space-between; align-items: center; }
-    .welcome button { width: auto; margin-top: 0; }
-    .empty { color: #64748b; text-align: center; padding: 20px; font-size: 0.9rem; }
+    .btn { border-radius: 10px; font-weight: 600; font-size: 0.95rem; padding: 10px 18px; }
+    .btn-green { background: var(--green); color: #04120a; }
+    .btn-green:hover { background: var(--green-dark); color: #fff; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid #2b3f60; }
+    .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #0ea5e9);
+      color: #04120a; font-weight: 800; font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-user { display: flex; align-items: center; gap: 10px; color: #e2e8f0; font-size: 0.9rem; font-weight: 600; }
+    .nav-user button { background: transparent; color: #94a3b8; font-size: 0.8rem; text-decoration: underline; }
+    .nav-user button:hover { color: #fff; }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      background:
+        radial-gradient(900px 420px at 78% 30%, rgba(34,197,94,0.14), transparent 60%),
+        linear-gradient(90deg, rgba(7,13,22,0.97) 0%, rgba(7,13,22,0.88) 38%, rgba(7,13,22,0.45) 72%, rgba(7,13,22,0.30) 100%),
+        url('/images/hero.jpg');
+      background-size: auto, auto, cover;
+      background-position: center, center, center right;
+      color: #fff;
+      padding: 64px 0 96px;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center; }
+    .eyebrow { color: var(--green); font-weight: 800; letter-spacing: 0.18em; font-size: 0.8rem; margin-bottom: 14px; }
+    .hero h1 { font-size: clamp(2.2rem, 4.6vw, 3.6rem); line-height: 1.08; font-weight: 800; }
+    .hero h1 .accent { color: var(--green); }
+    .hero p.lead { color: #9fb0c7; margin: 18px 0 26px; font-size: 1.05rem; max-width: 480px; }
+    .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-cta .btn { padding: 13px 22px; font-size: 1rem; }
+
+    /* search card */
+    .search-card {
+      background: rgba(16, 26, 44, 0.92);
+      border: 1px solid var(--line-dark);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    }
+    .search-card h3 { font-size: 1.15rem; margin-bottom: 16px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.75rem; color: #8ea3bf; margin-bottom: 5px; font-weight: 600; }
+    .search-card input, .search-card select {
+      width: 100%; padding: 11px 13px;
+      background: #0b1526; border: 1px solid var(--line-dark); border-radius: 10px;
+      color: #e6edf7; font-size: 0.93rem;
+    }
+    .search-card input:focus, .search-card select:focus { outline: none; border-color: var(--green); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .search-card .btn-search {
+      width: 100%; margin-top: 6px; padding: 13px;
+      background: var(--green); color: #04120a; font-weight: 700; font-size: 1rem; border-radius: 10px;
+    }
+    .search-card .btn-search:hover { background: var(--green-dark); color: #fff; }
+    .adv-link {
+      display: block; width: 100%; text-align: center; margin-top: 12px;
+      background: transparent; color: #8ea3bf; font-size: 0.85rem;
+    }
+    .adv-link:hover { color: var(--green); }
+    .adv-row { display: none; margin-top: 10px; }
+    .adv-row.open { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ---------- CATEGORY STRIP ---------- */
+    .cat-strip {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: 0 14px 40px rgba(2,12,27,0.10);
+      margin-top: -46px; position: relative; z-index: 5;
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      padding: 18px 10px;
+    }
+    .cat {
+      display: flex; align-items: center; gap: 11px; justify-content: center;
+      background: transparent; padding: 10px; border-radius: 10px; text-align: left;
+    }
+    .cat:hover { background: #f1f5f9; }
+    .cat .ic {
+      width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .cat b { display: block; font-size: 0.9rem; color: var(--ink); }
+    .cat span { font-size: 0.76rem; color: var(--muted); }
+
+    /* ---------- MAIN LAYOUT ---------- */
+    .main-grid { display: grid; grid-template-columns: 1fr 360px; gap: 26px; margin: 34px 0 40px; align-items: start; }
+    .panel { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: 0 8px 26px rgba(2,12,27,0.06); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .panel-head h2 { font-size: 1.3rem; }
+    .link-green { background: transparent; color: var(--green-dark); font-weight: 600; font-size: 0.9rem; }
+    .link-green:hover { text-decoration: underline; }
+
+    /* event cards */
+    .ev-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+    .ev-card {
+      border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .ev-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(2,12,27,0.12); }
+    .ev-img {
+      height: 140px; position: relative;
+      background-size: cover; background-position: center;
+    }
+    .ev-img::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(4,10,18,0.10) 40%, rgba(4,10,18,0.45) 100%);
+    }
+    .ev-img > * { z-index: 1; }
+    .ev-img.game { background-image: url('/images/pickup.jpg'); }
+    .ev-img.tournament { background-image: url('/images/tournament.jpg'); }
+    .ev-img.league { background-image: url('/images/league.jpg'); }
+    .ev-img.training { background-image: url('/images/training.jpg'); }
+    .ev-badge {
+      position: absolute; top: 10px; left: 10px;
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em;
+      color: #fff; padding: 4px 9px; border-radius: 6px;
+    }
+    .ev-badge.game { background: var(--green-dark); }
+    .ev-badge.tournament { background: var(--blue); }
+    .ev-badge.league { background: var(--purple); }
+    .ev-badge.training { background: var(--orange); }
+    .ev-date {
+      position: absolute; bottom: 10px; left: 10px;
+      background: rgba(255,255,255,0.95); border-radius: 8px;
+      padding: 4px 9px; text-align: center; line-height: 1.1;
+    }
+    .ev-date b { display: block; font-size: 0.95rem; color: var(--ink); }
+    .ev-date span { font-size: 0.62rem; font-weight: 800; color: var(--green-dark); letter-spacing: 0.08em; }
+    .ev-body { padding: 14px; }
+    .ev-body h3 { font-size: 1rem; margin-bottom: 5px; }
+    .ev-meta { color: var(--muted); font-size: 0.82rem; margin-bottom: 3px; }
+    .ev-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .ev-price { color: var(--green-dark); font-weight: 800; font-size: 1.05rem; }
+    .ev-price small { color: var(--muted); font-weight: 500; }
+    .chip { background: #f1f5f9; color: #475569; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; }
+    .empty { color: var(--muted); text-align: center; padding: 34px 10px; font-size: 0.95rem; grid-column: 1 / -1; }
+
+    /* sidebar */
+    .side { display: flex; flex-direction: column; gap: 26px; }
+    .up-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .up-row:last-child { border-bottom: none; }
+    .up-date {
+      width: 46px; flex-shrink: 0; text-align: center;
+      background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; padding: 5px 0; line-height: 1.15;
+    }
+    .up-date span { display: block; font-size: 0.6rem; font-weight: 800; color: var(--green-dark); letter-spacing: 0.08em; }
+    .up-date b { font-size: 1.05rem; color: var(--ink); }
+    .up-info { flex: 1; min-width: 0; }
+    .up-info b { display: block; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .up-info span { font-size: 0.76rem; color: var(--muted); }
+    .pill { font-size: 0.68rem; font-weight: 700; padding: 4px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+    .pill.confirmed { color: var(--green-dark); border-color: #86efac; background: #f0fdf4; }
+    .pill.registered { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
+    .pill.pending { color: #c2410c; border-color: #fdba74; background: #fff7ed; }
+
+    /* app promo */
+    .app-promo {
+      background:
+        linear-gradient(105deg, rgba(10,19,34,0.97) 45%, rgba(10,19,34,0.55) 100%),
+        url('/images/ball.jpg');
+      background-size: cover; background-position: center right;
+      color: #fff; border-radius: var(--radius); padding: 22px;
+    }
+    .app-promo h3 { font-size: 1.05rem; margin-bottom: 6px; }
+    .app-promo h3 .g { color: var(--green); }
+    .app-promo p { color: #9fb0c7; font-size: 0.85rem; margin-bottom: 14px; }
+    .stores { display: flex; gap: 10px; flex-wrap: wrap; }
+    .store {
+      background: #000; color: #fff; border: 1px solid #2b3f60;
+      border-radius: 9px; padding: 8px 13px; font-size: 0.82rem; font-weight: 600;
+    }
+    .store:hover { border-color: var(--green); }
+
+    /* ---------- STATS + TRUST ---------- */
+    .bottom-band { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: var(--radius); overflow: hidden; margin-bottom: 46px; box-shadow: 0 8px 26px rgba(2,12,27,0.08); }
+    .stats {
+      background: #0c1626; color: #fff;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      align-items: center; padding: 22px 14px; gap: 8px;
+    }
+    .stat { text-align: center; }
+    .stat .n { font-size: 1.25rem; font-weight: 800; }
+    .stat .l { font-size: 0.7rem; color: #8ea3bf; }
+    .stat .ic { font-size: 1.1rem; margin-bottom: 2px; }
+    .trust {
+      background: var(--card);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      align-items: center; padding: 18px 14px; gap: 8px;
+    }
+    .tr { display: flex; align-items: center; gap: 9px; justify-content: center; }
+    .tr .ic { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+    .tr b { display: block; font-size: 0.78rem; }
+    .tr span { display: block; font-size: 0.68rem; color: var(--muted); line-height: 1.25; }
+
+    /* ---------- MODALS ---------- */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(4, 10, 20, 0.72);
+      display: flex; align-items: center; justify-content: center; z-index: 100; padding: 18px;
+    }
+    .modal {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 460px;
+      padding: 26px; max-height: 92vh; overflow-y: auto; position: relative;
+    }
+    .modal h2 { font-size: 1.25rem; margin-bottom: 16px; }
+    .modal .x {
+      position: absolute; top: 14px; right: 14px; background: #f1f5f9; color: #475569;
+      width: 32px; height: 32px; border-radius: 50%; font-size: 0.95rem;
+    }
+    .modal label { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 600; margin: 12px 0 4px; }
+    .modal input, .modal select {
+      width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; font-size: 0.95rem;
+    }
+    .modal input:focus, .modal select:focus { outline: none; border-color: var(--green); }
+    .modal .row3 { display: grid; grid-template-columns: 1.2fr 0.7fr 0.9fr; gap: 10px; }
+    .modal .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .modal .btn-main { width: 100%; margin-top: 18px; padding: 12px; background: var(--green); color: #04120a; font-weight: 700; border-radius: 9px; font-size: 0.98rem; }
+    .modal .btn-main:hover { background: var(--green-dark); color: #fff; }
+    .modal .btn-sub { width: 100%; margin-top: 8px; padding: 11px; background: #f1f5f9; color: #334155; font-weight: 600; border-radius: 9px; }
+    .tabs2 { display: flex; background: #f1f5f9; border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+    .tabs2 button { flex: 1; padding: 9px; border-radius: 8px; background: transparent; font-weight: 700; color: var(--muted); }
+    .tabs2 button.on { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(2,12,27,0.12); }
+    .msg { padding: 10px 12px; border-radius: 9px; margin-top: 14px; font-size: 0.88rem; display: none; }
+    .msg.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; display: block; }
+    .msg.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; display: block; }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #0c1626; color: #fff; padding: 11px 20px; border-radius: 10px;
+      font-size: 0.9rem; z-index: 200; box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      opacity: 0; transition: opacity .25s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+    .hidden { display: none !important; }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width: 1020px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .main-grid { grid-template-columns: 1fr; }
+      .cat-strip { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+      .stats { grid-template-columns: repeat(3, 1fr); row-gap: 16px; }
+      .trust { grid-template-columns: repeat(2, 1fr); row-gap: 14px; }
+      .bottom-band { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .loc-chip { display: none; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>⚽ SoccerHub</h1>
-    <p>Find and host soccer games near you</p>
-  </header>
 
-  <div class="container">
+  <!-- ============ NAV ============ -->
+  <nav>
+    <div class="wrap nav-inner">
+      <a class="logo" href="#top">
+        <span class="ball">⚽</span>
+        <span>Soccer<em>Hub</em></span>
+      </a>
+      <div class="nav-links">
+        <a href="#top" class="active">Home</a>
+        <a href="#events" data-filter-type="">Games</a>
+        <a href="#events" data-filter-type="tournament">Tournaments</a>
+        <a href="#events" data-filter-type="league">Leagues</a>
+        <a href="#" data-soon>Fields</a>
+        <a href="#" data-soon>Community</a>
+        <a href="#how">How it Works</a>
+      </div>
+      <div class="nav-right">
+        <span class="loc-chip">📍 New York, NY ▾</span>
+        <button class="icon-btn" id="navSearch" title="Search">🔍</button>
+        <button class="icon-btn hidden" id="navBell" title="Notifications">🔔<span class="badge-dot" id="bellCount">0</span></button>
+        <button class="btn btn-green" id="navSignIn">Sign In</button>
+        <div class="nav-user hidden" id="navUser">
+          <div class="avatar" id="navAvatar">?</div>
+          <div>
+            <div id="navUserName">User</div>
+            <button id="navLogout">Log out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Logged-out: auth forms -->
-    <div class="card" id="authCard">
-      <div class="tabs">
-        <button id="tabLogin">Log In</button>
-        <button id="tabRegister" class="secondary">Register</button>
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">PLAY. CONNECT. COMPETE.</div>
+        <h1>Your Game.<br />Your Community.<br /><span class="accent">Anywhere in the USA.</span></h1>
+        <p class="lead">Find and join soccer games, tournaments, and leagues in your city. Meet players, build teams, and live the game.</p>
+        <div class="hero-cta">
+          <button class="btn btn-green" id="heroFind">Find Games Near You 🔍</button>
+          <button class="btn btn-ghost" id="heroHost">Host an Event ＋</button>
+        </div>
       </div>
 
-      <!-- Login form -->
+      <div class="search-card">
+        <h3>Find Your Perfect Game</h3>
+        <div class="field">
+          <label>City</label>
+          <input id="fCity" type="text" placeholder="📍 New York" />
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>Date</label>
+            <input id="fDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Time</label>
+            <input id="fTime" type="time" />
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>Skill Level</label>
+            <select id="fSkill">
+              <option value="">Any Skill Level</option>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="professional">Professional</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Surface</label>
+            <select id="fSurface">
+              <option value="">Any Surface</option>
+              <option value="grass">Grass</option>
+              <option value="turf">Turf</option>
+              <option value="indoor">Indoor</option>
+              <option value="street">Street</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-search" id="btnSearch">Search Games 🔍</button>
+        <button class="adv-link" id="advToggle">⚙ Advanced Search</button>
+        <div class="adv-row" id="advRow">
+          <div class="field">
+            <label>Event Type</label>
+            <select id="fType">
+              <option value="">All Types</option>
+              <option value="game">Pickup Game</option>
+              <option value="tournament">Tournament</option>
+              <option value="league">League</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Sort By</label>
+            <select id="fSort">
+              <option value="soonest">Soonest</option>
+              <option value="newest">Newest</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ CATEGORY STRIP ============ -->
+  <div class="wrap">
+    <div class="cat-strip">
+      <button class="cat" data-cat="game">
+        <span class="ic" style="background:#dcfce7;">⚽</span>
+        <span><b>Pickup Games</b><span>Join local games</span></span>
+      </button>
+      <button class="cat" data-cat="tournament">
+        <span class="ic" style="background:#dbeafe;">🏆</span>
+        <span><b>Tournaments</b><span>Compete &amp; win</span></span>
+      </button>
+      <button class="cat" data-cat="league">
+        <span class="ic" style="background:#ede9fe;">🛡️</span>
+        <span><b>Leagues</b><span>Season long play</span></span>
+      </button>
+      <button class="cat" data-cat-search="training">
+        <span class="ic" style="background:#ffedd5;">🎯</span>
+        <span><b>Training</b><span>Improve skills</span></span>
+      </button>
+      <button class="cat" data-soon>
+        <span class="ic" style="background:#fee2e2;">🏟️</span>
+        <span><b>Field Rentals</b><span>Book a field</span></span>
+      </button>
+      <button class="cat" id="catHost">
+        <span class="ic" style="background:#fce7f3;">📋</span>
+        <span><b>For Hosts</b><span>Manage events</span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ MAIN ============ -->
+  <div class="wrap main-grid" id="events">
+    <section class="panel">
+      <div class="panel-head">
+        <h2 id="eventsTitle">Featured Events</h2>
+        <button class="link-green" id="viewAll">View All</button>
+      </div>
+      <div class="ev-grid" id="evGrid">
+        <div class="empty">Loading games…</div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 style="font-size:1.1rem;">Upcoming Matches</h2>
+          <button class="link-green" id="upRefresh">Refresh</button>
+        </div>
+        <div id="upList"><div class="empty">Loading…</div></div>
+      </section>
+
+      <section class="app-promo">
+        <h3>Get the <span class="g">SoccerHub</span> App</h3>
+        <p>Book games, join events and connect with players on the go!</p>
+        <div class="stores">
+          <button class="store" data-soon>🍎 App Store</button>
+          <button class="store" data-soon>▶️ Google Play</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- ============ STATS + TRUST ============ -->
+  <div class="wrap" id="how">
+    <div class="bottom-band">
+      <div class="stats">
+        <div class="stat"><div class="ic">👥</div><div class="n">50K+</div><div class="l">Active Players</div></div>
+        <div class="stat"><div class="ic">📅</div><div class="n" id="statGames">3,200+</div><div class="l">Games This Month</div></div>
+        <div class="stat"><div class="ic">🏆</div><div class="n">850+</div><div class="l">Tournaments</div></div>
+        <div class="stat"><div class="ic">📍</div><div class="n">35+</div><div class="l">Cities Across USA</div></div>
+        <div class="stat"><div class="ic">⭐</div><div class="n">4.8</div><div class="l">Average Rating</div></div>
+      </div>
+      <div class="trust">
+        <div class="tr"><span class="ic" style="background:#dcfce7;">✅</span><span><b>Safe &amp; Secure</b><span>Verified players and secure payments</span></span></div>
+        <div class="tr"><span class="ic" style="background:#dbeafe;">💬</span><span><b>Live Chat</b><span>Connect with players in real-time</span></span></div>
+        <div class="tr"><span class="ic" style="background:#fef9c3;">⚡</span><span><b>Easy Booking</b><span>Quick and simple reservation system</span></span></div>
+        <div class="tr"><span class="ic" style="background:#ffe4e6;">🛟</span><span><b>24/7 Support</b><span>We're here to help anytime</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ AUTH MODAL ============ -->
+  <div class="overlay hidden" id="authModal">
+    <div class="modal">
+      <button class="x" data-close>✕</button>
+      <div class="tabs2">
+        <button id="tabLogin" class="on">Log In</button>
+        <button id="tabRegister">Register</button>
+      </div>
       <div id="loginForm">
         <h2>Welcome back</h2>
         <label>Email</label>
         <input id="loginEmail" type="email" placeholder="you@example.com" />
         <label>Password</label>
         <input id="loginPassword" type="password" placeholder="Your password" />
-        <button id="btnLogin">Log In</button>
+        <button class="btn-main" id="btnLogin">Log In</button>
       </div>
-
-      <!-- Register form -->
       <div id="registerForm" class="hidden">
         <h2>Create your account</h2>
-        <div class="row">
+        <div class="row2">
           <div>
             <label>First name</label>
-            <input id="regFirst" type="text" placeholder="Test" />
+            <input id="regFirst" type="text" placeholder="Alex" />
           </div>
           <div>
             <label>Last name</label>
-            <input id="regLast" type="text" placeholder="User" />
+            <input id="regLast" type="text" placeholder="Johnson" />
           </div>
         </div>
         <label>Email</label>
         <input id="regEmail" type="email" placeholder="you@example.com" />
         <label>Password (min 8 characters)</label>
         <input id="regPassword" type="password" placeholder="Choose a password" />
-        <button id="btnRegister">Register</button>
+        <button class="btn-main" id="btnRegister">Register</button>
       </div>
-
       <div id="authMsg" class="msg"></div>
     </div>
+  </div>
 
-    <!-- Logged-in: welcome + create event -->
-    <div class="card hidden" id="userCard">
-      <div class="welcome">
-        <div>
-          <h2 id="welcomeName" style="margin-bottom:0;">Welcome</h2>
-          <p style="color:#94a3b8; font-size:0.85rem;" id="welcomeEmail"></p>
-        </div>
-        <button class="secondary" id="btnLogout">Log Out</button>
-      </div>
-      <button id="btnHostToggle">＋ Host a new Game</button>
-    </div>
-
-    <div class="card hidden" id="createCard">
+  <!-- ============ HOST MODAL ============ -->
+  <div class="overlay hidden" id="hostModal">
+    <div class="modal">
+      <button class="x" data-close>✕</button>
       <h2>Host a new game</h2>
       <label>Title</label>
       <input id="evTitle" type="text" placeholder="Friday Night 5-a-side" />
@@ -158,7 +565,7 @@
       </select>
       <label>Location / Address</label>
       <input id="evLocation" type="text" placeholder="Zilker Park, 2100 Barton Springs Rd" />
-      <div class="row">
+      <div class="row3">
         <div>
           <label>City</label>
           <input id="evCity" type="text" placeholder="Austin" />
@@ -172,7 +579,7 @@
           <input id="evZip" type="text" placeholder="78704" />
         </div>
       </div>
-      <div class="row">
+      <div class="row2">
         <div>
           <label>Starts</label>
           <input id="evStart" type="datetime-local" />
@@ -182,7 +589,7 @@
           <input id="evEnd" type="datetime-local" />
         </div>
       </div>
-      <div class="row">
+      <div class="row2">
         <div>
           <label>Max players</label>
           <input id="evMax" type="number" value="10" min="2" />
@@ -192,216 +599,335 @@
           <input id="evPrice" type="number" value="0" min="0" />
         </div>
       </div>
-      <button id="btnCreate">Create Game</button>
-      <button class="secondary" id="btnCancelHost">Cancel</button>
+      <button class="btn-main" id="btnCreate">Create Game</button>
+      <button class="btn-sub" data-close>Cancel</button>
       <div id="createMsg" class="msg"></div>
     </div>
-
-    <!-- Events list (always visible) -->
-    <div class="card">
-      <div class="welcome" style="margin-bottom:16px;">
-        <h2 style="margin-bottom:0;">Upcoming Games</h2>
-        <button class="secondary" style="width:auto; margin-top:0;" id="btnRefresh">Refresh</button>
-      </div>
-      <div id="eventsList"><div class="empty">Loading games…</div></div>
-    </div>
-
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
-    // The API lives at the same address as this page, so we use relative paths.
-    const API = '/api/v1';
+    var API = '/api/v1';
+    var token = localStorage.getItem('token') || null;
+    var user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // Keep the login token in memory and in the browser so a refresh stays logged in.
-    let token = localStorage.getItem('token') || null;
-    let user = JSON.parse(localStorage.getItem('user') || 'null');
-
-    function showTab(which) {
-      const login = which === 'login';
-      document.getElementById('loginForm').classList.toggle('hidden', !login);
-      document.getElementById('registerForm').classList.toggle('hidden', login);
-      document.getElementById('tabLogin').className = login ? '' : 'secondary';
-      document.getElementById('tabRegister').className = login ? 'secondary' : '';
+    /* ---------- helpers ---------- */
+    function $(id) { return document.getElementById(id); }
+    function escapeHtml(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
     }
-
+    var toastTimer = null;
+    function toast(text) {
+      var t = $('toast');
+      t.textContent = text;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+    }
     function showMsg(id, text, ok) {
-      const el = document.getElementById(id);
+      var el = $(id);
       el.textContent = text;
       el.className = 'msg ' + (ok ? 'success' : 'error');
     }
+    var MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
-    // Update the page depending on whether someone is logged in.
-    function render() {
-      const loggedIn = !!token;
-      document.getElementById('authCard').classList.toggle('hidden', loggedIn);
-      document.getElementById('userCard').classList.toggle('hidden', !loggedIn);
-      // The create-game form stays hidden until the user clicks "Host a new Game".
-      document.getElementById('createCard').classList.add('hidden');
+    /* ---------- nav / auth state ---------- */
+    function renderNav() {
+      var loggedIn = !!token;
+      $('navSignIn').classList.toggle('hidden', loggedIn);
+      $('navUser').classList.toggle('hidden', !loggedIn);
+      $('navBell').classList.toggle('hidden', !loggedIn);
       if (loggedIn && user) {
-        document.getElementById('welcomeName').textContent = 'Welcome, ' + user.first_name + '!';
-        document.getElementById('welcomeEmail').textContent = user.email;
+        $('navUserName').textContent = user.first_name + ' ' + user.last_name;
+        $('navAvatar').textContent = (user.first_name || '?').charAt(0).toUpperCase() + (user.last_name || '').charAt(0).toUpperCase();
       }
     }
 
-    async function register() {
-      const body = {
-        first_name: document.getElementById('regFirst').value,
-        last_name: document.getElementById('regLast').value,
-        email: document.getElementById('regEmail').value,
-        password: document.getElementById('regPassword').value,
-      };
-      try {
-        const res = await fetch(API + '/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (data.success) {
-          saveLogin(data.data);
-          showMsg('authMsg', 'Account created! You are logged in.', true);
-        } else {
-          showMsg('authMsg', data.error?.message || 'Registration failed', false);
-        }
-      } catch (e) {
-        showMsg('authMsg', 'Could not reach the server.', false);
-      }
+    /* ---------- modals ---------- */
+    function openModal(id) { $(id).classList.remove('hidden'); }
+    function closeModals() {
+      $('authModal').classList.add('hidden');
+      $('hostModal').classList.add('hidden');
     }
-
-    async function login() {
-      const body = {
-        email: document.getElementById('loginEmail').value,
-        password: document.getElementById('loginPassword').value,
-      };
-      try {
-        const res = await fetch(API + '/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
-        if (data.success) {
-          saveLogin(data.data);
-          showMsg('authMsg', 'Logged in!', true);
-        } else {
-          showMsg('authMsg', data.error?.message || 'Login failed', false);
-        }
-      } catch (e) {
-        showMsg('authMsg', 'Could not reach the server.', false);
-      }
+    document.querySelectorAll('[data-close]').forEach(function (b) {
+      b.addEventListener('click', closeModals);
+    });
+    [$('authModal'), $('hostModal')].forEach(function (ov) {
+      ov.addEventListener('click', function (e) { if (e.target === ov) closeModals(); });
+    });
+    function showAuthTab(which) {
+      var login = which === 'login';
+      $('loginForm').classList.toggle('hidden', !login);
+      $('registerForm').classList.toggle('hidden', login);
+      $('tabLogin').classList.toggle('on', login);
+      $('tabRegister').classList.toggle('on', !login);
     }
+    $('tabLogin').addEventListener('click', function () { showAuthTab('login'); });
+    $('tabRegister').addEventListener('click', function () { showAuthTab('register'); });
 
+    /* ---------- auth ---------- */
     function saveLogin(data) {
       token = data.accessToken;
       user = data.user;
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      render();
+      renderNav();
     }
-
     function logout() {
-      token = null;
-      user = null;
+      token = null; user = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      render();
+      renderNav();
+      toast('Logged out');
+    }
+    function authRequest(path, body, msgId, okText) {
+      return fetch(API + path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(function (res) { return res.json(); }).then(function (data) {
+        if (data.success) {
+          saveLogin(data.data);
+          showMsg(msgId, okText, true);
+          setTimeout(closeModals, 700);
+        } else {
+          showMsg(msgId, (data.error && data.error.message) || 'Something went wrong', false);
+        }
+      }).catch(function () {
+        showMsg(msgId, 'Could not reach the server.', false);
+      });
+    }
+    $('btnLogin').addEventListener('click', function () {
+      authRequest('/auth/login', {
+        email: $('loginEmail').value,
+        password: $('loginPassword').value,
+      }, 'authMsg', 'Logged in!');
+    });
+    $('btnRegister').addEventListener('click', function () {
+      authRequest('/auth/register', {
+        first_name: $('regFirst').value,
+        last_name: $('regLast').value,
+        email: $('regEmail').value,
+        password: $('regPassword').value,
+      }, 'authMsg', 'Account created! You are logged in.');
+    });
+    $('navSignIn').addEventListener('click', function () { showAuthTab('login'); openModal('authModal'); });
+    $('navLogout').addEventListener('click', logout);
+
+    /* ---------- events: featured grid ---------- */
+    var currentFilters = {};
+    function buildQuery(filters) {
+      var parts = [];
+      Object.keys(filters).forEach(function (k) {
+        if (filters[k]) parts.push(k + '=' + encodeURIComponent(filters[k]));
+      });
+      return parts.length ? '?' + parts.join('&') : '';
+    }
+    function eventCard(ev) {
+      var d = new Date(ev.start_time);
+      var type = ['game','tournament','league'].indexOf(ev.type) >= 0 ? ev.type : 'game';
+      var isTraining = /train/i.test(ev.title || '');
+      var cls = isTraining ? 'training' : type;
+      var badge = isTraining ? 'TRAINING' : (type === 'game' ? 'PICKUP' : type.toUpperCase());
+      var price = Number(ev.price) > 0
+        ? '$' + Number(ev.price).toFixed(0) + ' <small>/ player</small>'
+        : '<small style="font-weight:700;color:#16a34a;">Free</small>';
+      var place = escapeHtml(ev.city) + (ev.state ? ', ' + escapeHtml(ev.state) : '');
+      var skill = ev.skill_level ? escapeHtml(ev.skill_level) : 'All Levels';
+      return '<div class="ev-card">'
+        + '<div class="ev-img ' + cls + '">'
+        +   '<span class="ev-badge ' + cls + '">' + badge + '</span>'
+        +   '<span class="ev-date"><span>' + MONTHS[d.getMonth()] + '</span><b>' + d.getDate() + '</b></span>'
+        + '</div>'
+        + '<div class="ev-body">'
+        +   '<h3>' + escapeHtml(ev.title) + '</h3>'
+        +   '<div class="ev-meta">📍 ' + place + '</div>'
+        +   '<div class="ev-meta">🗓️ ' + d.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) + '</div>'
+        +   '<div class="ev-foot">'
+        +     '<span class="ev-price">' + price + '</span>'
+        +     '<span class="chip">' + skill + ' · ' + ev.max_participants + ' spots</span>'
+        +   '</div>'
+        + '</div></div>';
+    }
+    function loadFeatured() {
+      var grid = $('evGrid');
+      grid.innerHTML = '<div class="empty">Loading games…</div>';
+      fetch(API + '/events' + buildQuery(currentFilters))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var events = (data.data && data.data.events) || [];
+          if (data.data && typeof data.data.total === 'number' && data.data.total > 0) {
+            $('statGames').textContent = data.data.total.toLocaleString() + '+';
+          }
+          if (events.length === 0) {
+            grid.innerHTML = '<div class="empty">No games match your search. Try different filters — or host one!</div>';
+            return;
+          }
+          grid.innerHTML = events.map(eventCard).join('');
+        })
+        .catch(function () {
+          grid.innerHTML = '<div class="empty">Could not load games.</div>';
+        });
     }
 
-    async function createEvent() {
-      const start = document.getElementById('evStart').value;
-      const end = document.getElementById('evEnd').value;
+    /* ---------- upcoming sidebar ---------- */
+    function statusPill(status) {
+      if (status === 'published') return '<span class="pill confirmed">Confirmed</span>';
+      if (status === 'draft') return '<span class="pill pending">Pending</span>';
+      return '<span class="pill registered">Registered</span>';
+    }
+    function loadUpcoming() {
+      var list = $('upList');
+      list.innerHTML = '<div class="empty">Loading…</div>';
+      fetch(API + '/events?sort=soonest&limit=4')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          var events = (data.data && data.data.events) || [];
+          if (events.length === 0) {
+            list.innerHTML = '<div class="empty">No upcoming matches yet.</div>';
+            return;
+          }
+          list.innerHTML = events.map(function (ev) {
+            var d = new Date(ev.start_time);
+            var when = d.toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+            var place = escapeHtml(ev.city) + (ev.state ? ', ' + escapeHtml(ev.state) : '');
+            return '<div class="up-row">'
+              + '<div class="up-date"><span>' + MONTHS[d.getMonth()] + '</span><b>' + d.getDate() + '</b></div>'
+              + '<div class="up-info"><b>' + escapeHtml(ev.title) + '</b><span>' + when + ' · ' + place + '</span></div>'
+              + statusPill(ev.status)
+              + '</div>';
+          }).join('');
+        })
+        .catch(function () {
+          list.innerHTML = '<div class="empty">Could not load matches.</div>';
+        });
+    }
+
+    /* ---------- search + filters ---------- */
+    function applySearch() {
+      currentFilters = {
+        city: $('fCity').value.trim(),
+        skill_level: $('fSkill').value,
+        surface_type: $('fSurface').value,
+        type: $('fType').value,
+        sort: $('fSort').value,
+      };
+      $('eventsTitle').textContent = currentFilters.city || currentFilters.type || currentFilters.skill_level
+        ? 'Search Results' : 'Featured Events';
+      loadFeatured();
+      document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+    }
+    $('btnSearch').addEventListener('click', applySearch);
+    $('advToggle').addEventListener('click', function () {
+      $('advRow').classList.toggle('open');
+    });
+    $('viewAll').addEventListener('click', function () {
+      currentFilters = {};
+      $('fCity').value = ''; $('fSkill').value = ''; $('fSurface').value = ''; $('fType').value = '';
+      $('eventsTitle').textContent = 'Featured Events';
+      loadFeatured();
+    });
+    $('upRefresh').addEventListener('click', loadUpcoming);
+
+    /* category strip + nav type filters */
+    document.querySelectorAll('[data-cat]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        currentFilters = { type: b.getAttribute('data-cat'), sort: 'soonest' };
+        $('eventsTitle').textContent = 'Search Results';
+        loadFeatured();
+        document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    document.querySelectorAll('[data-cat-search]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        currentFilters = { search: b.getAttribute('data-cat-search') };
+        $('eventsTitle').textContent = 'Search Results';
+        loadFeatured();
+        document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    document.querySelectorAll('.nav-links a[data-filter-type]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var t = a.getAttribute('data-filter-type');
+        currentFilters = t ? { type: t, sort: 'soonest' } : {};
+        $('eventsTitle').textContent = t ? 'Search Results' : 'Featured Events';
+        loadFeatured();
+      });
+    });
+
+    /* coming soon bits */
+    document.querySelectorAll('[data-soon]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        toast('Coming soon! 🚧');
+      });
+    });
+    $('navSearch').addEventListener('click', function () {
+      $('fCity').focus();
+      document.getElementById('top').scrollIntoView({ behavior: 'smooth' });
+    });
+    $('navBell').addEventListener('click', function () { toast('No new notifications'); });
+
+    /* ---------- hosting ---------- */
+    function openHost() {
+      if (!token) {
+        showAuthTab('login');
+        openModal('authModal');
+        toast('Log in first to host a game');
+        return;
+      }
+      openModal('hostModal');
+    }
+    $('heroHost').addEventListener('click', openHost);
+    $('catHost').addEventListener('click', openHost);
+    $('heroFind').addEventListener('click', function () {
+      document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    $('btnCreate').addEventListener('click', function () {
+      var start = $('evStart').value;
+      var end = $('evEnd').value;
       if (!start || !end) {
         showMsg('createMsg', 'Please pick a start and end time.', false);
         return;
       }
-      const body = {
-        title: document.getElementById('evTitle').value,
-        type: document.getElementById('evType').value,
-        city: document.getElementById('evCity').value,
-        state: document.getElementById('evState').value,
-        zip_code: document.getElementById('evZip').value,
-        location: document.getElementById('evLocation').value,
+      var body = {
+        title: $('evTitle').value,
+        type: $('evType').value,
+        location: $('evLocation').value,
+        city: $('evCity').value,
+        state: $('evState').value,
+        zip_code: $('evZip').value,
         start_time: new Date(start).toISOString(),
         end_time: new Date(end).toISOString(),
-        max_participants: parseInt(document.getElementById('evMax').value, 10),
-        price: document.getElementById('evPrice').value,
+        max_participants: parseInt($('evMax').value, 10),
+        price: $('evPrice').value,
       };
-      try {
-        const res = await fetch(API + '/events', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token,
-          },
-          body: JSON.stringify(body),
-        });
-        const data = await res.json();
+      fetch(API + '/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(body),
+      }).then(function (r) { return r.json(); }).then(function (data) {
         if (data.success) {
-          showMsg('createMsg', 'Game created!', true);
-          loadEvents();
+          showMsg('createMsg', 'Game created! 🎉', true);
+          loadFeatured();
+          loadUpcoming();
+          setTimeout(closeModals, 900);
         } else {
-          showMsg('createMsg', data.error?.message || 'Could not create game', false);
+          showMsg('createMsg', (data.error && data.error.message) || 'Could not create game', false);
         }
-      } catch (e) {
+      }).catch(function () {
         showMsg('createMsg', 'Could not reach the server.', false);
-      }
-    }
-
-    async function loadEvents() {
-      const list = document.getElementById('eventsList');
-      list.innerHTML = '<div class="empty">Loading games…</div>';
-      try {
-        const res = await fetch(API + '/events');
-        const data = await res.json();
-        const events = data.data?.events || [];
-        if (events.length === 0) {
-          list.innerHTML = '<div class="empty">No games yet. Be the first to host one!</div>';
-          return;
-        }
-        list.innerHTML = events.map(function (ev) {
-          const when = new Date(ev.start_time).toLocaleString();
-          const price = Number(ev.price) > 0 ? ('$' + ev.price) : 'Free';
-          return '<div class="event">'
-            + '<h3>' + escapeHtml(ev.title) + '</h3>'
-            + '<div class="meta">📍 ' + escapeHtml(ev.location) + ', ' + escapeHtml(ev.city) + '</div>'
-            + '<div class="meta">🗓️ ' + when + '</div>'
-            + '<span class="badge">' + ev.type + '</span>'
-            + '<span class="badge">' + price + '</span>'
-            + '<span class="badge">up to ' + ev.max_participants + ' players</span>'
-            + '</div>';
-        }).join('');
-      } catch (e) {
-        list.innerHTML = '<div class="empty">Could not load games.</div>';
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, function (c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
-    }
-
-    // Connect buttons to their actions (done here so it works under the
-    // page's Content-Security-Policy, which blocks inline onclick attributes).
-    document.getElementById('tabLogin').addEventListener('click', function () { showTab('login'); });
-    document.getElementById('tabRegister').addEventListener('click', function () { showTab('register'); });
-    document.getElementById('btnLogin').addEventListener('click', login);
-    document.getElementById('btnRegister').addEventListener('click', register);
-    document.getElementById('btnLogout').addEventListener('click', logout);
-    document.getElementById('btnCreate').addEventListener('click', createEvent);
-    document.getElementById('btnRefresh').addEventListener('click', loadEvents);
-    document.getElementById('btnHostToggle').addEventListener('click', function () {
-      const c = document.getElementById('createCard');
-      c.classList.remove('hidden');
-      c.scrollIntoView({ behavior: 'smooth' });
-    });
-    document.getElementById('btnCancelHost').addEventListener('click', function () {
-      document.getElementById('createCard').classList.add('hidden');
     });
 
-    // Start-up
-    render();
-    loadEvents();
+    /* ---------- start ---------- */
+    renderNav();
+    loadFeatured();
+    loadUpcoming();
   </script>
 </body>
 </html>
