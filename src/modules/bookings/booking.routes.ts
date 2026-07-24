@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
 import BookingService from './booking.service';
 import { authMiddleware, AuthRequest } from '../../middleware/auth';
 import { handleValidationErrors } from '../../middleware/validation';
