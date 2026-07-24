@@ -7,8 +7,7 @@ WORKDIR /app
 COPY package.json ./
 
 # Install all dependencies (including dev) so TypeScript can compile.
-# npm install is used instead of npm ci because there is no package-lock.json.
-RUN npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
 # Copy source code
 COPY . .
