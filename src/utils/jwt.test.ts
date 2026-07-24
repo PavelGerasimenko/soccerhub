@@ -41,9 +41,10 @@ describe('JWT Utilities', () => {
       expect(payload?.type).toBe('access');
     });
 
-    it('should return null for refresh token', () => {
+    it('should reject refresh token', () => {
       const refreshToken = generateRefreshToken(testId, testEmail);
       const payload = verifyAccessToken(refreshToken);
+      // Refresh tokens have type: 'refresh', so they should be rejected by verifyAccessToken
       expect(payload).toBeNull();
     });
 

@@ -17,7 +17,8 @@ export const generateRefreshToken = (id: string, email: string): string => {
 export const verifyAccessToken = (token: string): JwtPayload | null => {
   try {
     const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
-    if (payload.type !== 'access') {
+    // If type field exists, it must be 'access'. If missing, accept it (old tokens).
+    if (payload.type && payload.type !== 'access') {
       return null;
     }
     return payload;
@@ -29,7 +30,8 @@ export const verifyAccessToken = (token: string): JwtPayload | null => {
 export const verifyRefreshToken = (token: string): JwtPayload | null => {
   try {
     const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
-    if (payload.type !== 'refresh') {
+    // If type field exists, it must be 'refresh'. If missing, accept it (old tokens).
+    if (payload.type && payload.type !== 'refresh') {
       return null;
     }
     return payload;
