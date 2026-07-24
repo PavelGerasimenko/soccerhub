@@ -610,6 +610,7 @@
   <script>
     var API = '/api/v1';
     var token = localStorage.getItem('token') || null;
+    var refreshToken = localStorage.getItem('refreshToken') || null;
     var user = JSON.parse(localStorage.getItem('user') || 'null');
 
     /* ---------- helpers ---------- */
@@ -671,17 +672,64 @@
     /* ---------- auth ---------- */
     function saveLogin(data) {
       token = data.accessToken;
+      refreshToken = data.refreshToken;
       user = data.user;
       localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
       renderNav();
     }
     function logout() {
-      token = null; user = null;
+      token = null; refreshToken = null; user = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       renderNav();
       toast('Logged out');
+    }
+    var refreshPromise = null;
+    function tryRefreshToken() {
+      if (!refreshPromise && refreshToken) {
+        refreshPromise = fetch(API + '/auth/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: refreshToken }),
+        }).then(function (r) { return r.json(); }).then(function (data) {
+          refreshPromise = null;
+          if (data.success && data.data.accessToken) {
+            token = data.data.accessToken;
+            localStorage.setItem('token', token);
+            return true;
+          } else {
+            logout();
+            return false;
+          }
+        }).catch(function () {
+          refreshPromise = null;
+          logout();
+          return false;
+        });
+      }
+      return refreshPromise || Promise.resolve(false);
+    }
+    function apiFetch(path, options) {
+      options = options || {};
+      if (token && !options.headers) options.headers = {};
+      if (token) options.headers['Authorization'] = 'Bearer ' + token;
+      return fetch(API + path, options).then(function (res) {
+        if (res.status === 401 && refreshToken) {
+          return tryRefreshToken().then(function (refreshed) {
+            if (refreshed) {
+              var newOpts = Object.assign({}, options);
+              newOpts.headers = Object.assign({}, options.headers);
+              newOpts.headers['Authorization'] = 'Bearer ' + token;
+              return fetch(API + path, newOpts);
+            }
+            return res;
+          });
+        }
+        return res;
+      });
     }
     function authRequest(path, body, msgId, okText) {
       return fetch(API + path, {
@@ -906,9 +954,9 @@
         max_participants: parseInt($('evMax').value, 10),
         price: $('evPrice').value,
       };
-      fetch(API + '/events', {
+      apiFetch('/events', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       }).then(function (r) { return r.json(); }).then(function (data) {
         if (data.success) {

@@ -119,6 +119,8 @@ router.put(
     body('title').optional().notEmpty().trim(),
     body('location').optional().notEmpty().trim(),
     body('city').optional().notEmpty().trim(),
+    body('state').optional().trim(),
+    body('zip_code').optional().trim(),
     body('start_time').optional().isISO8601(),
     body('end_time').optional().isISO8601(),
     body('max_participants').optional().isInt({ min: 2 }),
@@ -128,18 +130,22 @@ router.put(
   handleValidationErrors,
   async (req: AuthRequest, res: any, next: any) => {
     try {
-      const event = await EventService.updateEvent(req.params.id, req.userId!, {
-        title: req.body.title,
-        description: req.body.description,
-        location: req.body.location,
-        city: req.body.city,
-        start_time: req.body.start_time ? new Date(req.body.start_time) : undefined,
-        end_time: req.body.end_time ? new Date(req.body.end_time) : undefined,
-        max_participants: req.body.max_participants ? parseInt(req.body.max_participants, 10) : undefined,
-        skill_level: req.body.skill_level,
-        surface_type: req.body.surface_type,
-        price: req.body.price ? parseFloat(req.body.price) : undefined,
-      });
+      const updateData: any = {};
+      if (req.body.title !== undefined) updateData.title = req.body.title;
+      if (req.body.description !== undefined) updateData.description = req.body.description;
+      if (req.body.location !== undefined) updateData.location = req.body.location;
+      if (req.body.city !== undefined) updateData.city = req.body.city;
+      if (req.body.state !== undefined) updateData.state = req.body.state;
+      if (req.body.zip_code !== undefined) updateData.zip_code = req.body.zip_code;
+      if (req.body.start_time !== undefined) updateData.start_time = new Date(req.body.start_time);
+      if (req.body.end_time !== undefined) updateData.end_time = new Date(req.body.end_time);
+      if (req.body.max_participants !== undefined) updateData.max_participants = parseInt(req.body.max_participants, 10);
+      if (req.body.min_participants !== undefined) updateData.min_participants = parseInt(req.body.min_participants, 10);
+      if (req.body.skill_level !== undefined) updateData.skill_level = req.body.skill_level;
+      if (req.body.surface_type !== undefined) updateData.surface_type = req.body.surface_type;
+      if (req.body.price !== undefined) updateData.price = parseFloat(req.body.price);
+
+      const event = await EventService.updateEvent(req.params.id, req.userId!, updateData);
 
       res.status(200).json({
         success: true,

@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import UserService from './user.service';
 import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../../middleware/auth';
 import { handleValidationErrors } from '../../middleware/validation';
+import { verifyRefreshToken, generateAccessToken } from '../../utils/jwt';
 
 const router = Router();
 
@@ -71,6 +72,42 @@ router.post(
       res.status(200).json({
         success: true,
         data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// POST /auth/refresh - Refresh access token using refresh token
+router.post(
+  '/auth/refresh',
+  [
+    body('refreshToken')
+      .notEmpty()
+      .withMessage('Refresh token is required'),
+  ] as any,
+  handleValidationErrors,
+  async (req: any, res: any, next: any) => {
+    try {
+      const payload = verifyRefreshToken(req.body.refreshToken);
+      if (!payload) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            code: 'INVALID_REFRESH_TOKEN',
+            message: 'Refresh token is invalid or expired',
+            statusCode: 401,
+          },
+        });
+      }
+
+      const newAccessToken = generateAccessToken(payload.id, payload.email);
+      res.status(200).json({
+        success: true,
+        data: {
+          accessToken: newAccessToken,
+        },
       });
     } catch (error) {
       next(error);

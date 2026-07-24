@@ -3,20 +3,24 @@ import config from '../config/environment';
 import { JwtPayload } from '../types/user.interface';
 
 export const generateAccessToken = (id: string, email: string): string => {
-  return jwt.sign({ id, email }, config.jwt.secret, {
+  return jwt.sign({ id, email, type: 'access' }, config.jwt.secret, {
     expiresIn: config.jwt.expire,
   });
 };
 
 export const generateRefreshToken = (id: string, email: string): string => {
-  return jwt.sign({ id, email }, config.jwt.secret, {
+  return jwt.sign({ id, email, type: 'refresh' }, config.jwt.secret, {
     expiresIn: config.jwt.refreshExpire,
   });
 };
 
 export const verifyAccessToken = (token: string): JwtPayload | null => {
   try {
-    return jwt.verify(token, config.jwt.secret) as JwtPayload;
+    const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
+    if (payload.type !== 'access') {
+      return null;
+    }
+    return payload;
   } catch (error) {
     return null;
   }
@@ -24,7 +28,11 @@ export const verifyAccessToken = (token: string): JwtPayload | null => {
 
 export const verifyRefreshToken = (token: string): JwtPayload | null => {
   try {
-    return jwt.verify(token, config.jwt.secret) as JwtPayload;
+    const payload = jwt.verify(token, config.jwt.secret) as JwtPayload;
+    if (payload.type !== 'refresh') {
+      return null;
+    }
+    return payload;
   } catch (error) {
     return null;
   }

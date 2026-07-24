@@ -52,6 +52,7 @@ export interface AuthResponse {
 export interface JwtPayload {
   id: string;
   email: string;
+  type: 'access' | 'refresh';
   iat?: number;
   exp?: number;
 }
