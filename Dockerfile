@@ -7,7 +7,8 @@ WORKDIR /app
 COPY package.json ./
 
 # Install all dependencies (including dev) so TypeScript can compile.
-RUN npm ci --legacy-peer-deps
+# Use npm install (not npm ci) for compatibility with legacy peer deps
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
