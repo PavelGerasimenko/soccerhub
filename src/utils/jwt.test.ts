@@ -38,6 +38,13 @@ describe('JWT Utilities', () => {
       expect(payload).not.toBeNull();
       expect(payload?.id).toBe(testId);
       expect(payload?.email).toBe(testEmail);
+      expect(payload?.type).toBe('access');
+    });
+
+    it('should return null for refresh token', () => {
+      const refreshToken = generateRefreshToken(testId, testEmail);
+      const payload = verifyAccessToken(refreshToken);
+      expect(payload).toBeNull();
     });
 
     it('should return null for invalid token', () => {
@@ -62,6 +69,13 @@ describe('JWT Utilities', () => {
       expect(payload).not.toBeNull();
       expect(payload?.id).toBe(testId);
       expect(payload?.email).toBe(testEmail);
+      expect(payload?.type).toBe('refresh');
+    });
+
+    it('should return null for access token', () => {
+      const accessToken = generateAccessToken(testId, testEmail);
+      const payload = verifyRefreshToken(accessToken);
+      expect(payload).toBeNull();
     });
 
     it('should return null for invalid token', () => {

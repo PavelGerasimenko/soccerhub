@@ -139,6 +139,49 @@ describe('User Routes', () => {
     });
   });
 
+  describe('POST /api/v1/auth/refresh', () => {
+    it('should return new access token with valid refresh token', async () => {
+      (jwtUtils.verifyRefreshToken as jest.Mock).mockReturnValue({
+        id: 'user-123',
+        email: 'test@example.com',
+        type: 'refresh',
+      });
+      (jwtUtils.generateAccessToken as jest.Mock).mockReturnValue('new-access-token');
+
+      const response = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({
+          refreshToken: 'valid-refresh-token',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.success).toBe(true);
+      expect(response.body.data.accessToken).toBe('new-access-token');
+    });
+
+    it('should return 401 with invalid refresh token', async () => {
+      (jwtUtils.verifyRefreshToken as jest.Mock).mockReturnValue(null);
+
+      const response = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({
+          refreshToken: 'invalid-refresh-token',
+        });
+
+      expect(response.status).toBe(401);
+      expect(response.body.error.code).toBe('INVALID_REFRESH_TOKEN');
+    });
+
+    it('should return 400 without refresh token', async () => {
+      const response = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({});
+
+      expect(response.status).toBe(400);
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+  });
+
   describe('GET /api/v1/users/:id', () => {
     it('should return user by id', async () => {
       const mockUser = {
