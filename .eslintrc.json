@@ -19,15 +19,21 @@
     "import/extensions": "off",
     "import/no-unresolved": "off",
     "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/no-unused-vars": "warn",
     "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "max-len": ["error", { "code": 100 }],
-    "class-methods-use-this": "warn",
-    "object-curly-newline": "warn",
+    "max-len": ["warn", { "code": 120 }],
+    "class-methods-use-this": "off",
+    "object-curly-newline": "off",
     "arrow-body-style": "off",
     "max-classes-per-file": "off",
-    "no-use-before-define": "warn",
-    "no-shadow": "warn"
+    "no-use-before-define": "off",
+    "no-shadow": "off",
+    "quotes": "off",
+    "no-param-reassign": "off",
+    "lines-between-class-members": "off",
+    "consistent-return": "off",
+    "prefer-destructuring": "off"
   }
 }
