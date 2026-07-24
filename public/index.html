@@ -572,7 +572,7 @@
         </div>
         <div>
           <label>State</label>
-          <input id="evState" type="text" placeholder="TX" />
+          <input id="evState" type="text" placeholder="TX" maxlength="2" />
         </div>
         <div>
           <label>Zip Code</label>
@@ -970,6 +970,12 @@
       }).catch(function () {
         showMsg('createMsg', 'Could not reach the server.', false);
       });
+    });
+
+    /* State field validation: uppercase and letters only */
+    $('evState').addEventListener('input', function(e) {
+      var val = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+      e.target.value = val.slice(0, 2);
     });
 
     /* ---------- start ---------- */
