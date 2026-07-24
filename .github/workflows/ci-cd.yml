@@ -171,77 +171,8 @@ jobs:
     needs: [build, security-scan]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'v1.27.0'
-
-      - name: Configure kubectl
+      - name: Trigger Railway deployment
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
-      - name: Create namespace
-        run: kubectl apply -f k8s/namespace.yaml
-
-      - name: Deploy secrets
-        run: |
-          kubectl create secret generic soccerhub-secrets \
-            --from-literal=db-name=${{ secrets.DB_NAME }} \
-            --from-literal=db-user=${{ secrets.DB_USER }} \
-            --from-literal=db-password=${{ secrets.DB_PASSWORD }} \
-            --from-literal=jwt-access-secret=${{ secrets.JWT_ACCESS_SECRET }} \
-            --from-literal=jwt-refresh-secret=${{ secrets.JWT_REFRESH_SECRET }} \
-            -n soccerhub \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy ConfigMap
-        run: kubectl apply -f k8s/configmap.yaml
-
-      - name: Deploy PostgreSQL schema ConfigMap
-        run: |
-          kubectl create configmap postgres-schema \
-            --from-file=src/database/schema.sql \
-            -n soccerhub \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Deploy StatefulSets
-        run: kubectl apply -f k8s/statefulset.yaml
-
-      - name: Deploy Services
-        run: kubectl apply -f k8s/service.yaml
-
-      - name: Deploy Application
-        run: kubectl apply -f k8s/deployment.yaml
-
-      - name: Wait for rollout
-        run: kubectl rollout status deployment/soccerhub-app -n soccerhub --timeout=5m
-
-      - name: Verify deployment
-        run: |
-          kubectl get pods -n soccerhub
-          kubectl get services -n soccerhub
-          kubectl logs -n soccerhub -l app=soccerhub-app --tail=50
-
-      - name: Slack notification
-        uses: slackapi/slack-github-action@v1
-        if: always()
-        with:
-          payload: |
-            {
-              "text": "SoccerHub Deployment: ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*SoccerHub Production Deployment*\nStatus: ${{ job.status }}\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          echo "Docker image built and pushed to GHCR"
+          echo "Railway auto-deploys from container registry"
+          echo "Deployment URL: https://soccerhub-production-c6a3.up.railway.app"
