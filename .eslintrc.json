@@ -1,7 +1,8 @@
 {
   "env": {
     "node": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true
   },
   "extends": [
     "airbnb-base"
@@ -23,6 +24,10 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "max-len": ["error", { "code": 100 }],
     "class-methods-use-this": "warn",
-    "object-curly-newline": "warn"
+    "object-curly-newline": "warn",
+    "arrow-body-style": "off",
+    "max-classes-per-file": "off",
+    "no-use-before-define": "warn",
+    "no-shadow": "warn"
   }
 }
