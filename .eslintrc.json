@@ -17,9 +17,12 @@
   "rules": {
     "import/extensions": "off",
     "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "max-len": ["error", { "code": 100 }]
+    "max-len": ["error", { "code": 100 }],
+    "class-methods-use-this": "warn",
+    "object-curly-newline": "warn"
   }
 }
