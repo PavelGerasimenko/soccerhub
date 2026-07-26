@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "soccerhub-dev",
+      "runtimeExecutable": "docker-compose",
+      "runtimeArgs": ["-f", "docker-compose.dev.yml", "up"],
+      "port": 3000
+    }
+  ]
+}
