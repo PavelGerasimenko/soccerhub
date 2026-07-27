@@ -1093,6 +1093,224 @@
       animation: shimmer 2s infinite;
     }
 
+    /* ===== MODAL STYLES ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: var(--white);
+      border-radius: 16px;
+      padding: var(--spacing-2xl);
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s var(--transition-base);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-lg);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.5px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray);
+      transition: color var(--transition-fast);
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: var(--navy);
+    }
+
+    .form-group {
+      margin-bottom: var(--spacing-lg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: var(--spacing-sm);
+      font-size: 0.95rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      background: var(--white);
+      border: 1px solid #ddd;
+      padding: var(--spacing-md);
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--navy);
+      transition: all var(--transition-fast);
+    }
+
+    .form-group input::placeholder {
+      color: var(--gray);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(31, 215, 111, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .time-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    .form-group.error input,
+    .form-group.error select {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .form-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: var(--spacing-sm);
+      display: none;
+    }
+
+    .form-group.error .form-error {
+      display: block;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-xl);
+      padding-top: var(--spacing-lg);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-modal {
+      flex: 1;
+      padding: var(--spacing-md);
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-create {
+      background: var(--green);
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .btn-create:hover {
+      background: var(--green-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(31, 215, 111, 0.2);
+    }
+
+    .btn-create:disabled {
+      background: #ccc;
+      color: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-cancel {
+      background: #f5f5f5;
+      color: var(--navy);
+      border: 1px solid #ddd;
+    }
+
+    .btn-cancel:hover {
+      background: #eee;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        max-width: 95%;
+        padding: var(--spacing-lg);
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .time-inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-actions {
+        flex-direction: column;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1137,7 +1355,7 @@
         <p class="hero-tagline">Find and join soccer games, tournaments, and leagues in your city. Meet players, build teams, and live the game.</p>
         <div class="hero-ctas">
           <button class="btn btn-primary">Find Games Near You</button>
-          <button class="btn btn-secondary">Host an Event</button>
+          <button class="btn btn-secondary" id="host-event-btn">Host an Event</button>
         </div>
       </div>
       <div class="search-card">
@@ -1453,6 +1671,96 @@
   </div>
 </footer>
 
+<!-- ===== HOST EVENT MODAL ===== -->
+<div class="modal" id="host-event-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Host a New Event</h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+
+    <form id="event-form">
+      <!-- Event Type -->
+      <div class="form-group full">
+        <label for="event-type">Event Type *</label>
+        <select id="event-type" required>
+          <option value="">Select event type...</option>
+          <option value="PICKUP">Pickup Games</option>
+          <option value="TOURNAMENT">Tournaments</option>
+          <option value="LEAGUE">Leagues</option>
+          <option value="TRAINING">Training</option>
+          <option value="FIELD">Field Rentals</option>
+        </select>
+        <span class="form-error">Please select an event type</span>
+      </div>
+
+      <!-- Location Section -->
+      <div class="form-group full">
+        <label>Location *</label>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">City / Address *</label>
+          <input type="text" id="city" placeholder="e.g., Manhattan" required>
+          <span class="form-error">City/Address is required</span>
+        </div>
+        <div class="form-group">
+          <label for="state">State *</label>
+          <input type="text" id="state" placeholder="NY" maxlength="2" required>
+          <span class="form-error">State (max 2 characters) is required</span>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label for="zip">Zip Code *</label>
+        <input type="text" id="zip" placeholder="10001" required>
+        <span class="form-error">Zip code is required</span>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="event-date">Date *</label>
+          <input type="date" id="event-date" required>
+          <span class="form-error">Date is required</span>
+        </div>
+      </div>
+
+      <!-- Time Frame -->
+      <div class="form-group full">
+        <label>Time Frame *</label>
+      </div>
+
+      <div class="time-inputs">
+        <div class="form-group">
+          <label for="time-from">From *</label>
+          <input type="time" id="time-from" required>
+          <span class="form-error">Start time is required</span>
+        </div>
+        <div class="form-group">
+          <label for="time-to">To *</label>
+          <input type="time" id="time-to" required>
+          <span class="form-error">End time is required</span>
+        </div>
+      </div>
+
+      <!-- Price/Amount -->
+      <div class="form-group full">
+        <label for="price">Price per Player ($) *</label>
+        <input type="number" id="price" placeholder="15" min="0" step="0.01" required>
+        <span class="form-error">Price is required</span>
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button type="button" class="btn-modal btn-cancel" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn-modal btn-create">Create Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   // ===== SCROLL REVEAL ANIMATIONS =====
   const observerOptions = {
@@ -1544,6 +1852,182 @@
   console.log('🎯 SoccerHub Landing Page Loaded');
   console.log('📊 Performance optimized for 4G networks');
   console.log('✨ Immersive animations enabled');
+
+  // ===== HOST EVENT MODAL FUNCTIONALITY =====
+  const hostEventBtn = document.getElementById('host-event-btn');
+  const modal = document.getElementById('host-event-modal');
+  const modalClose = document.getElementById('modal-close');
+  const modalCancel = document.getElementById('modal-cancel');
+  const eventForm = document.getElementById('event-form');
+
+  // Event type mapping for display
+  const eventTypeMap = {
+    'PICKUP': 'Pickup Games',
+    'TOURNAMENT': 'Tournaments',
+    'LEAGUE': 'Leagues',
+    'TRAINING': 'Training',
+    'FIELD': 'Field Rentals'
+  };
+
+  const eventColorMap = {
+    'PICKUP': 'linear-gradient(135deg, #1FD76F 0%, #00D9B8 100%)',
+    'TOURNAMENT': 'linear-gradient(135deg, #6366f1 0%, #3b82f6 100%)',
+    'LEAGUE': 'linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%)',
+    'TRAINING': 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+    'FIELD': 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
+  };
+
+  // Open modal
+  hostEventBtn.addEventListener('click', () => {
+    modal.classList.add('active');
+  });
+
+  // Close modal
+  function closeModal() {
+    modal.classList.remove('active');
+    eventForm.reset();
+    document.querySelectorAll('.form-group').forEach(group => {
+      group.classList.remove('error');
+    });
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalCancel.addEventListener('click', closeModal);
+
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Form validation
+  function validateForm() {
+    let isValid = true;
+    const formGroups = document.querySelectorAll('.form-group');
+
+    formGroups.forEach(group => {
+      const input = group.querySelector('input, select');
+      if (input && !input.value.trim()) {
+        group.classList.add('error');
+        isValid = false;
+      } else {
+        group.classList.remove('error');
+      }
+    });
+
+    // Validate state (max 2 characters)
+    const stateInput = document.getElementById('state');
+    if (stateInput.value.length > 2) {
+      stateInput.parentElement.classList.add('error');
+      isValid = false;
+    }
+
+    // Validate time frame
+    const timeFrom = document.getElementById('time-from').value;
+    const timeTo = document.getElementById('time-to').value;
+    if (timeFrom && timeTo && timeFrom >= timeTo) {
+      alert('End time must be after start time');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // Format date for display
+  function formatDate(dateString) {
+    const date = new Date(dateString + 'T00:00:00');
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return {
+      month: months[date.getMonth()],
+      day: date.getDate()
+    };
+  }
+
+  // Create event from form data
+  eventForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    // Get form values
+    const eventType = document.getElementById('event-type').value;
+    const city = document.getElementById('city').value;
+    const state = document.getElementById('state').value.toUpperCase();
+    const zip = document.getElementById('zip').value;
+    const eventDate = document.getElementById('event-date').value;
+    const timeFrom = document.getElementById('time-from').value;
+    const timeTo = document.getElementById('time-to').value;
+    const price = document.getElementById('price').value;
+
+    // Format date
+    const dateInfo = formatDate(eventDate);
+
+    // Create event card HTML
+    const eventCard = document.createElement('div');
+    eventCard.className = 'event-card';
+    eventCard.style.animation = 'fadeInUp 0.6s var(--transition-base) forwards';
+
+    const eventImage = document.createElement('div');
+    eventImage.className = 'event-image';
+    eventImage.style.background = eventColorMap[eventType];
+
+    const badge = document.createElement('span');
+    badge.className = 'event-badge';
+    badge.textContent = eventType;
+
+    const dateDiv = document.createElement('div');
+    dateDiv.className = 'event-date';
+    dateDiv.innerHTML = `
+      <div class="event-month">${dateInfo.month}</div>
+      <div class="event-day">${dateInfo.day}</div>
+    `;
+
+    eventImage.appendChild(badge);
+    eventImage.appendChild(dateDiv);
+
+    const eventInfo = document.createElement('div');
+    eventInfo.className = 'event-info';
+    eventInfo.innerHTML = `
+      <div class="event-time">⏰ ${timeFrom} - ${timeTo}</div>
+      <div class="event-title">${eventTypeMap[eventType]} Game</div>
+      <div class="event-location">📍 ${city}, ${state} ${zip}</div>
+      <div class="event-meta">
+        <div class="event-meta-item">📊 All Levels</div>
+        <div class="event-meta-item">👥 Open Spots</div>
+      </div>
+      <div class="event-price">$${price}</div>
+    `;
+
+    eventCard.appendChild(eventImage);
+    eventCard.appendChild(eventInfo);
+
+    // Add event to the appropriate section
+    const eventsCarousel = document.querySelector('.events-carousel');
+    if (eventsCarousel) {
+      eventsCarousel.appendChild(eventCard);
+
+      // Trigger animation
+      setTimeout(() => {
+        eventCard.style.opacity = '1';
+      }, 100);
+    }
+
+    // Close modal and reset form
+    closeModal();
+
+    // Show success message
+    alert(`🎉 Event created! "${eventTypeMap[eventType]}" has been added to the events list.`);
+  });
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
 </script>
 
 </body>
