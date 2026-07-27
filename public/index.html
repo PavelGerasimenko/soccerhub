@@ -1805,10 +1805,6 @@
     document.querySelector('#games').scrollIntoView({ behavior: 'smooth' });
   });
 
-  document.querySelector('.btn-secondary')?.addEventListener('click', () => {
-    console.log('Navigate to event hosting page');
-  });
-
   // ===== LAZY LOAD IMAGES =====
   if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries) => {
