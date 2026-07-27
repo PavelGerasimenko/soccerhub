@@ -1780,15 +1780,6 @@
     observer.observe(el);
   });
 
-  // ===== NAVIGATION ACTIVE STATE =====
-  const navLinks = document.querySelectorAll('.nav-links a');
-  navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-    });
-  });
-
   // ===== SEARCH BUTTON HANDLER =====
   const searchBtn = document.querySelector('.btn-search');
   const locationInput = document.querySelector('#location');
