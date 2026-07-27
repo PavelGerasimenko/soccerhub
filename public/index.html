@@ -1323,12 +1323,12 @@
       <span>Soccer<em>Hub</em></span>
     </a>
     <div class="nav-links">
-      <a href="#home" class="active">Home</a>
-      <a href="#games">Games</a>
-      <a href="#tournaments">Tournaments</a>
-      <a href="#leagues">Leagues</a>
-      <a href="#fields">Fields</a>
-      <a href="#community">Community</a>
+      <a href="#home" class="nav-link active" data-category="all">Home</a>
+      <a href="#games" class="nav-link" data-category="PICKUP">Games</a>
+      <a href="#tournaments" class="nav-link" data-category="TOURNAMENT">Tournaments</a>
+      <a href="#leagues" class="nav-link" data-category="LEAGUE">Leagues</a>
+      <a href="#fields" class="nav-link" data-category="FIELD">Fields</a>
+      <a href="#community" class="nav-link" data-category="all">Community</a>
     </div>
     <div class="nav-right">
       <div class="location-chip">
@@ -1446,8 +1446,8 @@
 <section class="featured" id="games">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title">Featured Events</h2>
-      <a href="#" class="view-all">View All →</a>
+      <h2 class="section-title" id="events-title">Featured Events</h2>
+      <a href="#" class="view-all" id="view-all-link">View All →</a>
     </div>
     <div class="events-carousel">
       <div class="event-card">
@@ -1908,6 +1908,77 @@
       closeModal();
     }
   });
+
+  // ===== NAVIGATION FILTERING =====
+  const navLinks = document.querySelectorAll('.nav-link');
+  const eventsCarousel = document.querySelector('.events-carousel');
+  const eventsTitle = document.getElementById('events-title');
+  const viewAllLink = document.getElementById('view-all-link');
+
+  const categoryTitleMap = {
+    'all': 'Featured Events',
+    'PICKUP': '🏟️ Pickup Games',
+    'TOURNAMENT': '🏆 Tournaments',
+    'LEAGUE': '🔄 Leagues',
+    'FIELD': '🏠 Field Rentals'
+  };
+
+  function filterEventsByCategory(category) {
+    const eventCards = eventsCarousel.querySelectorAll('.event-card');
+    let visibleCount = 0;
+
+    eventCards.forEach(card => {
+      const badge = card.querySelector('.event-badge');
+      const eventType = badge ? badge.textContent : 'PICKUP';
+
+      if (category === 'all' || eventType === category) {
+        card.style.display = 'block';
+        card.style.animation = 'fadeInUp 0.6s var(--transition-base)';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update title with emoji
+    eventsTitle.textContent = categoryTitleMap[category] || 'Featured Events';
+    eventsTitle.style.animation = 'fadeIn 0.3s var(--transition-fast)';
+
+    // Show "View All" link only when filtered
+    if (category !== 'all') {
+      viewAllLink.style.display = 'inline-flex';
+    } else {
+      viewAllLink.style.display = 'none';
+    }
+
+    // Scroll to events section
+    document.getElementById('games').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Add click handlers to nav links
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const category = link.getAttribute('data-category');
+
+      // Update active state
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+
+      // Filter events
+      filterEventsByCategory(category);
+    });
+  });
+
+  // View All link handler
+  if (viewAllLink) {
+    viewAllLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      navLinks.forEach(l => l.classList.remove('active'));
+      navLinks[0].classList.add('active');
+      filterEventsByCategory('all');
+    });
+  }
 
   // Form validation
   function validateForm() {
