@@ -270,9 +270,15 @@
     .hero {
       margin-top: 72px;
       padding: var(--spacing-2xl) 0;
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%);
+      background: linear-gradient(135deg, rgba(15, 20, 25, 0.7) 0%, rgba(15, 20, 25, 0.5) 50%), url('/images/hero-stadium.jpg');
+      background-size: auto, cover;
+      background-position: center, center;
+      background-attachment: fixed;
       position: relative;
       overflow: hidden;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
     }
 
     .hero::before {
@@ -283,8 +289,8 @@
       right: 0;
       bottom: 0;
       background:
-        radial-gradient(800px 600px at 70% 20%, rgba(31, 215, 111, 0.1), transparent 60%),
-        radial-gradient(500px 400px at 20% 80%, rgba(0, 217, 184, 0.08), transparent 70%);
+        radial-gradient(800px 600px at 70% 20%, rgba(31, 215, 111, 0.08), transparent 60%),
+        radial-gradient(500px 400px at 20% 80%, rgba(0, 217, 184, 0.06), transparent 70%);
       pointer-events: none;
     }
 
@@ -672,6 +678,9 @@
       background: linear-gradient(135deg, #e5e7eb 0%, #f5f7fa 100%);
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .event-image img {
@@ -679,6 +688,7 @@
       height: 100%;
       object-fit: cover;
       transition: transform var(--transition-base);
+      display: block;
     }
 
     .event-card:hover .event-image img {
@@ -1224,7 +1234,7 @@
     <div class="events-carousel">
       <div class="event-card">
         <div class="event-image">
-          <div style="width:100%; height:100%; background: linear-gradient(135deg, #1FD76F 0%, #00D9B8 100%);"></div>
+          <img src="/images/event-pickup.jpg" alt="Pickup game with players in park" loading="lazy">
           <span class="event-badge">PICKUP</span>
           <div class="event-date">
             <div class="event-month">JUL</div>
@@ -1244,7 +1254,7 @@
       </div>
       <div class="event-card">
         <div class="event-image">
-          <div style="width:100%; height:100%; background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);"></div>
+          <img src="/images/event-tournament.jpg" alt="Championship trophy on stadium field" loading="lazy">
           <span class="event-badge">TOURNAMENT</span>
           <div class="event-date">
             <div class="event-month">JUL</div>
@@ -1264,7 +1274,7 @@
       </div>
       <div class="event-card">
         <div class="event-image">
-          <div style="width:100%; height:100%; background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%);"></div>
+          <img src="/images/event-league.jpg" alt="Competitive league match with players" loading="lazy">
           <span class="event-badge">LEAGUE</span>
           <div class="event-date">
             <div class="event-month">AUG</div>
@@ -1284,7 +1294,7 @@
       </div>
       <div class="event-card">
         <div class="event-image">
-          <div style="width:100%; height:100%; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);"></div>
+          <img src="/images/event-training.jpg" alt="Training session with agility drills and cones" loading="lazy">
           <span class="event-badge">TRAINING</span>
           <div class="event-date">
             <div class="event-month">JUL</div>
