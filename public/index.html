@@ -1869,6 +1869,14 @@
     'FIELD': 'Field Rentals'
   };
 
+  const eventImageMap = {
+    'PICKUP': '/images/pickup.jpg',
+    'TOURNAMENT': '/images/tournament.jpg',
+    'LEAGUE': '/images/league.jpg',
+    'TRAINING': '/images/training.jpg',
+    'FIELD': '/images/ball.jpg'
+  };
+
   const eventColorMap = {
     'PICKUP': 'linear-gradient(135deg, #1FD76F 0%, #00D9B8 100%)',
     'TOURNAMENT': 'linear-gradient(135deg, #6366f1 0%, #3b82f6 100%)',
@@ -1972,7 +1980,9 @@
 
     const eventImage = document.createElement('div');
     eventImage.className = 'event-image';
-    eventImage.style.background = eventColorMap[eventType];
+    eventImage.style.backgroundImage = `url('${eventImageMap[eventType]}')`;
+    eventImage.style.backgroundSize = 'cover';
+    eventImage.style.backgroundPosition = 'center';
 
     const badge = document.createElement('span');
     badge.className = 'event-badge';
